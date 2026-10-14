@@ -22,6 +22,7 @@ npm run preview   # serve dist/ locally
 | --- | --- |
 | Name, tagline, links, navigation, email | `src/data/site.ts` |
 | Publications, datasets, software | `src/data/publications.ts` |
+| Google Scholar citation counts | `src/data/citations.ts` |
 | News items (home page) | `src/data/news.ts` |
 | Talks and workshops | `src/data/talks.ts` |
 | Web CV (education, experience, skills, honors) | `src/data/cv.ts` |
@@ -46,9 +47,8 @@ include a phone number or home address.
 
 ### Citation counts
 
-Citation counts on the publications pages come from the [OpenAlex](https://openalex.org) API at build time
-(`src/lib/openalex.ts`). The deploy workflow also runs weekly, so the counts stay current without new commits.
-If OpenAlex is unreachable, the counts are hidden and the build still succeeds.
+Citation counts come from Google Scholar and live in `src/data/citations.ts` (total, h-index, and per-item counts
+keyed by publication `id`). Scholar has no public API, so update the numbers and the `asOf` date by hand.
 
 ## Deployment
 

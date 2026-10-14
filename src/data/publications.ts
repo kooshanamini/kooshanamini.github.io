@@ -1,5 +1,5 @@
 // Publications, datasets, and software.
-// Citation counts are fetched from OpenAlex at build time (src/lib/openalex.ts) using `doi`.
+// Google Scholar citation counts live in citations.ts, keyed by `id`.
 
 export type LinkKind = 'paper' | 'preprint' | 'code' | 'data' | 'model' | 'pr';
 
@@ -156,6 +156,8 @@ export const publications: Publication[] = [
 ];
 
 export interface Artifact {
+	/** Matches a key in citations.ts when the item has citations. */
+	id?: string;
 	title: string;
 	kind: string;
 	host: string;
@@ -213,6 +215,7 @@ export const artifacts: Artifact[] = [
 		year: 2026,
 	},
 	{
+		id: 'power-network-data-2022',
 		title: 'Galveston Island electric power network data',
 		kind: 'Dataset',
 		host: 'NHERI DesignSafe · PRJ-3550',

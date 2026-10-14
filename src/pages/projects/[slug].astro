@@ -8,7 +8,7 @@ import ProjectCover from '../../components/ProjectCover.astro';
 import PublicationItem from '../../components/PublicationItem.astro';
 import { publications } from '../../data/publications';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { citationsFor, getCitationCounts } from '../../lib/openalex';
+import { citationsFor } from '../../data/citations';
 
 export async function getStaticPaths() {
 	const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -28,7 +28,6 @@ const { project, prev, next } = Astro.props;
 const { Content } = await render(project);
 const data = project.data;
 const publication = data.publication ? publications.find((pub) => pub.id === data.publication) : undefined;
-const counts = await getCitationCounts();
 const ogImage = data.cover ? (await getImage({ src: data.cover, width: 1200, format: 'jpg' })).src : undefined;
 
 const meta = [
@@ -143,7 +142,7 @@ const meta = [
 							<div class="mt-3 rounded-2xl border border-line bg-surface p-5 sm:p-6">
 								<PublicationItem
 									pub={{ ...publication, project: undefined }}
-									citations={citationsFor(counts, publication.doi)}
+									citations={citationsFor(publication.id)}
 								/>
 							</div>
 						</section>

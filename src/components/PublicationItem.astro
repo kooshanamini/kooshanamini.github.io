@@ -1,11 +1,11 @@
 ---
 import { ME, type Publication } from '../data/publications';
-import Icon from './Icon.astro';
+import CitationBadge from './CitationBadge.astro';
 import LinkPill from './LinkPill.astro';
 
 interface Props {
 	pub: Publication;
-	/** Citation count to display (already filtered by citationsFor). */
+	/** Google Scholar citation count to show, if any. */
 	citations?: number;
 	headingLevel?: 'h3' | 'h4';
 }
@@ -50,16 +50,6 @@ const titleHref = doiHref ?? pub.links?.[0]?.href;
 		{doiHref && pub.type !== 'preprint' && <LinkPill href={doiHref} label="Paper" kind="paper" />}
 		{pub.links?.map((link) => <LinkPill {...link} />)}
 		{pub.project && <LinkPill href={`/projects/${pub.project}/`} label="Project page" kind="project" />}
-		{
-			citations !== undefined && (
-				<span
-					class="inline-flex items-center gap-1.5 rounded-md bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent tabular-nums"
-					title="Citation count from OpenAlex"
-				>
-					<Icon name="quote" class="size-3.5" />
-					Cited by {citations}
-				</span>
-			)
-		}
+		{citations !== undefined && <CitationBadge count={citations} />}
 	</div>
 </article>

@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Weekly rebuild so citation counts (fetched from OpenAlex at build time) stay fresh.
-  schedule:
-    - cron: "23 10 * * 1"
 
 permissions:
   contents: read

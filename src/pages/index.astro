@@ -14,13 +14,12 @@ import { site } from '../data/site';
 import { conferenceTalks, invitedTalks, workshops } from '../data/talks';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatMonth } from '../lib/format';
-import { citationsFor, getCitationCounts, totalCitations } from '../lib/openalex';
+import { citationsFor, scholar } from '../data/citations';
 
 const featured = (await getCollection('projects'))
 	.filter((project) => project.data.featured)
 	.sort((a, b) => a.data.order - b.data.order);
 const selected = publications.filter((pub) => pub.selected).slice(0, 4);
-const counts = await getCitationCounts();
 
 // Art-directed headshot: a round avatar on small screens, a 4:5 portrait beside the text on desktop.
 const [portrait1x, portrait2x, avatar1x, avatar2x] = await Promise.all([
@@ -30,17 +29,14 @@ const [portrait1x, portrait2x, avatar1x, avatar2x] = await Promise.all([
 	getImage({ src: headshotSquare, width: 224, format: 'webp' }),
 ]);
 
-// "At a glance" facts. The citation total comes from OpenAlex and is left out if the request failed.
-const citationTotal = totalCitations(counts);
+// "At a glance" facts.
 const talkCount =
 	invitedTalks.length +
 	workshops.length +
 	conferenceTalks.filter((talk) => !talk.note?.startsWith('Presented by')).length;
 const highlights = [
 	{ value: '5', label: 'peer-reviewed journal papers, 4 as first author', href: '/publications/' },
-	...(citationTotal > 0
-		? [{ value: citationTotal.toLocaleString('en-US'), label: 'citations to date', href: '/publications/' }]
-		: []),
+	{ value: scholar.total.toLocaleString('en-US'), label: 'citations on Google Scholar', href: '/publications/' },
 	{ value: String(talkCount), label: 'invited talks, workshops, and conference presentations', href: '/talks/' },
 	{ value: '6', label: 'sponsored research projects with NSF, NASA, NIST, and Harris County', href: '/projects/' },
 ];
@@ -249,7 +245,7 @@ const jsonLd = {
 				{
 					selected.map((pub) => (
 						<li class="py-6">
-							<PublicationItem pub={pub} citations={citationsFor(counts, pub.doi)} />
+							<PublicationItem pub={pub} citations={citationsFor(pub.id)} />
 						</li>
 					))
 				}
