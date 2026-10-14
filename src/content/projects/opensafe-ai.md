@@ -16,8 +16,8 @@ metrics:
     label: flood reports flagged a median 27 hours early
   - value: '18,004'
     label: messages schema-validated in about 100 seconds per pass
-cover: ../../assets/projects/opensafe-architecture.webp
-coverAlt: "System architecture: forcing guidance and observations feed hazard, fragility, and sensing modules; a deterministic fusion core writes to an append-only state store that serves a dashboard, network analysis, AI agents, and a replay harness."
+cover: ../../assets/projects/opensafe-fusion-maps.webp
+coverAlt: Maps of road impassability at the peak of Hurricane Harvey, before and after fusing 311 reports, and the change between them.
 coverFit: contain
 ---
 
@@ -38,10 +38,6 @@ In a replay of Hurricane Harvey:
 
 - Held-out AUC improved from 0.654 to 0.707, better in all 11 forecast cycles.
 - The fused model flagged 738 of 1,286 flood reports a median of 27 hours early.
-
-![Three maps of road impassability during Hurricane Harvey: prior, posterior after fusing reports, and their difference](../../assets/projects/opensafe-fusion-maps.webp)
-
-*Fusing evidence at the storm peak: (a) the prior probability that each road is impassable, (b) the posterior after fusing that cycle's 311 reports (circles), and (c) the change between them.*
 
 ![Charts of held-out pairwise AUC with all evidence versus with each source removed, and skill by forecast lead time](../../assets/projects/opensafe-evidence.webp)
 

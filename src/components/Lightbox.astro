@@ -14,9 +14,8 @@
 
 <script>
 	const dialog = document.getElementById('figure-lightbox') as HTMLDialogElement | null;
-	// Created on demand so the page has no empty <img> until a figure is opened.
+	// Attached on first open so the page has no empty <img> until a figure is opened.
 	const large = document.createElement('img');
-	dialog?.append(large);
 
 	/** The largest candidate in an image's srcset, or its src. */
 	const largestSource = (img: HTMLImageElement) => {
@@ -30,6 +29,7 @@
 
 	if (dialog) {
 		const open = (img: HTMLImageElement) => {
+			if (!large.isConnected) dialog.append(large);
 			large.src = largestSource(img);
 			large.alt = img.alt;
 			dialog.showModal();

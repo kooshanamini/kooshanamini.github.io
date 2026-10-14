@@ -11,9 +11,10 @@ import SectionHeader from '../components/SectionHeader.astro';
 import { news } from '../data/news';
 import { publications } from '../data/publications';
 import { site } from '../data/site';
+import { conferenceTalks, invitedTalks, workshops } from '../data/talks';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatMonth } from '../lib/format';
-import { citationsFor, getCitationCounts } from '../lib/openalex';
+import { citationsFor, getCitationCounts, totalCitations } from '../lib/openalex';
 
 const featured = (await getCollection('projects'))
 	.filter((project) => project.data.featured)
@@ -29,11 +30,19 @@ const [portrait1x, portrait2x, avatar1x, avatar2x] = await Promise.all([
 	getImage({ src: headshotSquare, width: 224, format: 'webp' }),
 ]);
 
+// "At a glance" facts. The citation total comes from OpenAlex and is left out if the request failed.
+const citationTotal = totalCitations(counts);
+const talkCount =
+	invitedTalks.length +
+	workshops.length +
+	conferenceTalks.filter((talk) => !talk.note?.startsWith('Presented by')).length;
 const highlights = [
-	{ value: '5', label: 'peer-reviewed journal papers, 4 as first author' },
-	{ value: '0.86', label: 'Dice on a hurricane never seen in training' },
-	{ value: '30,362', label: 'road and bridge segments labeled by open VLMs in 3.1 days' },
-	{ value: '6', label: 'sponsored projects with NSF, NASA, NIST, and Harris County' },
+	{ value: '5', label: 'peer-reviewed journal papers, 4 as first author', href: '/publications/' },
+	...(citationTotal > 0
+		? [{ value: citationTotal.toLocaleString('en-US'), label: 'citations to date', href: '/publications/' }]
+		: []),
+	{ value: String(talkCount), label: 'invited talks, workshops, and conference presentations', href: '/talks/' },
+	{ value: '6', label: 'sponsored research projects with NSF, NASA, NIST, and Harris County', href: '/projects/' },
 ];
 
 const focus = [
@@ -94,10 +103,22 @@ const jsonLd = {
 				</h1>
 				<p class="mt-5 text-lg leading-relaxed text-body sm:text-xl sm:leading-relaxed">{site.tagline}</p>
 				<p class="mt-4 leading-relaxed text-muted">
-					At Rice I’m advised by Jamie Padgett, with research co-advised by Hanjie Chen in Computer Science. I adapt
-					vision-language and depth foundation models to real-world imagery, run open VLMs at scale, and pair them
-					with the probabilistic modeling that turns predictions into risk estimates. NASA’s Disasters Program team
-					has used my debris imagery resources and methods.
+					At Rice, I’m advised by Jamie Padgett, with research co-advised by Hanjie Chen in Computer Science. I’m drawn
+					to problems where data is messy, labels are scarce, and decisions can’t wait, like mapping damage in the first
+					days after a hurricane.
+				</p>
+				<p class="mt-3 leading-relaxed text-muted">
+					Recent work includes <a href="/projects/clipseg-debris/" class="link">CLIPSeg-debris</a>, a vision-language
+					model that segments debris in storms it has never seen; <a href="/projects/debrisheightnet/" class="link"
+						>DebrisHeightNet</a
+					>, which estimates debris volume from a single aerial image; and an <a
+						href="/projects/satellite-vlm-damage/"
+						class="link">open-VLM pipeline</a
+					> for mapping road and bridge damage from satellite imagery. Along the way I’ve published <a
+						href="/publications/"
+						class="link">five peer-reviewed journal papers</a
+					>, led <a href="/talks/" class="link">hands-on workshops</a> on AI for disaster imagery, and spent summer 2025
+					at Arup as a Risk & Resilience Engineering Intern.
 				</p>
 
 				<p class="mt-6 inline-flex items-center gap-2.5 rounded-full border border-line bg-bg px-3.5 py-1.5 text-sm">
@@ -154,25 +175,28 @@ const jsonLd = {
 		</div>
 	</section>
 
-	<!-- Highlights -->
-	<section aria-label="Highlights" class="border-y border-line bg-surface">
-		<dl class="container-site grid grid-cols-2 lg:grid-cols-4">
+	<!-- At a glance -->
+	<section aria-label="At a glance" class="border-y border-line bg-surface">
+		<ul
+			class:list={[
+				'container-site grid grid-cols-2 gap-x-6 gap-y-7 py-8 sm:py-10',
+				highlights.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+			]}
+		>
 			{
-				highlights.map((item, i) => (
-					<div
-						class:list={[
-							'flex flex-col-reverse gap-1 py-6 pr-4 sm:py-8',
-							i % 2 === 1 && 'border-l border-line pl-4 sm:pl-6',
-							i >= 2 && 'border-t border-line lg:border-t-0',
-							i === 2 && 'lg:border-l lg:pl-6',
-						]}
-					>
-						<dt class="text-sm leading-snug text-muted">{item.label}</dt>
-						<dd class="text-2xl font-semibold tracking-tight text-fg tabular-nums sm:text-3xl">{item.value}</dd>
-					</div>
+				highlights.map((item) => (
+					<li>
+						<a
+							href={item.href}
+							class="group flex h-full flex-col gap-1 border-l-2 border-line pl-4 transition-colors hover:border-accent"
+						>
+							<span class="text-2xl font-semibold tracking-tight text-fg tabular-nums sm:text-3xl">{item.value}</span>
+							<span class="text-sm leading-snug text-muted transition-colors group-hover:text-fg">{item.label}</span>
+						</a>
+					</li>
 				))
 			}
-		</dl>
+		</ul>
 	</section>
 
 	<!-- Focus areas -->
