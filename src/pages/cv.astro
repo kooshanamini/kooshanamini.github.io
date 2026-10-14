@@ -4,6 +4,7 @@ import PageHeader from '../components/PageHeader.astro';
 import { education, experience, honors, leadership, service, skills, teaching } from '../data/cv';
 import { site } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { parseLinks } from '../lib/inline';
 
 /** "Label: rest of the bullet" → ["Label", "rest of the bullet"], so the label can be emphasized. */
 function splitLead(text: string): [string | null, string] {
@@ -52,7 +53,24 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 									</h3>
 									<p class="shrink-0 text-sm text-subtle tabular-nums">{entry.dates}</p>
 								</div>
-								{entry.bullets && <p class="mt-1 text-sm leading-relaxed text-muted">{entry.bullets.join(' · ')}</p>}
+								{entry.bullets && (
+									<p class="mt-1 text-sm leading-relaxed text-muted">
+										{entry.bullets.map((bullet, i) => (
+											<>
+												{i > 0 && ' · '}
+												{parseLinks(bullet).map((part) =>
+													typeof part === 'string' ? (
+														part
+													) : (
+														<a href={part.href} class="link">
+															{part.text}
+														</a>
+													),
+												)}
+											</>
+										))}
+									</p>
+								)}
 							</div>
 						))
 					}

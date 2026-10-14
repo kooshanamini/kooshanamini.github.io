@@ -1,4 +1,8 @@
 // Web CV: education, experience, skills, honors, service, teaching, and leadership.
+// Bullets may contain Markdown-style links: [label](url).
+import { site } from './site';
+
+const { padgett, chen } = site.advisors;
 
 export interface Entry {
 	title: string;
@@ -13,7 +17,10 @@ export const education: Entry[] = [
 		title: 'Ph.D., Engineering',
 		org: 'Rice University',
 		dates: '2022 – Expected Fall 2027',
-		bullets: ['GPA 3.96/4.00', 'Advisor: Jamie E. Padgett; research co-advised with Hanjie Chen (Computer Science)'],
+		bullets: [
+			'GPA 3.96/4.00',
+			`Advisor: [${padgett.fullName}](${padgett.href}); research co-advised with [${chen.fullName}](${chen.href}) (Computer Science)`,
+		],
 	},
 	{ title: 'M.Sc., Engineering', org: 'Sharif University of Technology', dates: '2017 – 2020', bullets: ['GPA 3.42/4.00'] },
 	{

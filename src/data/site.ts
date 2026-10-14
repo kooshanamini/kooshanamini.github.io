@@ -11,6 +11,10 @@ export const site = {
 	tagline:
 		'I build machine learning systems that turn aerial and satellite imagery, simulations, and sensor data into decisions people can act on.',
 	availability: 'Open to Summer 2027 internships',
+	advisors: {
+		padgett: { name: 'Jamie Padgett', fullName: 'Jamie E. Padgett', href: 'https://padgett.rice.edu/' },
+		chen: { name: 'Hanjie Chen', fullName: 'Hanjie Chen', href: 'https://hanjiechen.github.io/' },
+	},
 	// Assembled in the browser by EmailLink so the address never appears in the HTML as plain text.
 	email: { user: 'kooshanamini', domain: 'gmail.com' },
 	social: [
