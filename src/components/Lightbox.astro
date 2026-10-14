@@ -1,0 +1,112 @@
+---
+// Click (or press Enter on) a project figure to view it full screen. Uses the native <dialog> element.
+---
+
+<dialog id="figure-lightbox" class="lightbox" aria-label="Enlarged figure">
+	<form method="dialog">
+		<button class="lightbox-close" aria-label="Close">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+			</svg>
+		</button>
+	</form>
+</dialog>
+
+<script>
+	const dialog = document.getElementById('figure-lightbox') as HTMLDialogElement | null;
+	// Created on demand so the page has no empty <img> until a figure is opened.
+	const large = document.createElement('img');
+	dialog?.append(large);
+
+	/** The largest candidate in an image's srcset, or its src. */
+	const largestSource = (img: HTMLImageElement) => {
+		if (!img.srcset) return img.currentSrc || img.src;
+		const candidates = img.srcset.split(',').map((entry) => {
+			const [url, size = '0w'] = entry.trim().split(/\s+/);
+			return { url, width: parseFloat(size) };
+		});
+		return candidates.sort((a, b) => b.width - a.width)[0]?.url ?? img.src;
+	};
+
+	if (dialog) {
+		const open = (img: HTMLImageElement) => {
+			large.src = largestSource(img);
+			large.alt = img.alt;
+			dialog.showModal();
+		};
+		const figures = document.querySelectorAll<HTMLImageElement>('.prose-site p > img:only-child, img[data-zoomable]');
+		for (const img of figures) {
+			img.tabIndex = 0;
+			img.setAttribute('role', 'button');
+			img.setAttribute('aria-label', `Enlarge figure: ${img.alt}`);
+			img.classList.add('cursor-zoom-in');
+			img.addEventListener('click', () => open(img));
+			img.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					open(img);
+				}
+			});
+		}
+		// Clicking the backdrop or the enlarged image closes the viewer; Escape closes it natively.
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog || event.target === large) dialog.close();
+		});
+	}
+</script>
+
+<style>
+	.lightbox {
+		width: 100vw;
+		height: 100dvh;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 3.5rem 1rem 1.5rem;
+		border: 0;
+		background: transparent;
+	}
+
+	.lightbox[open] {
+		display: grid;
+		place-items: center;
+	}
+
+	.lightbox::backdrop {
+		background: rgb(8 12 20 / 0.84);
+	}
+
+	.lightbox :global(img) {
+		max-width: min(96vw, 1800px);
+		max-height: 100%;
+		width: auto;
+		height: auto;
+		padding: 0.75rem;
+		border-radius: 0.875rem;
+		background: var(--figure-bg);
+		box-shadow: 0 30px 80px rgb(0 0 0 / 0.45);
+		cursor: zoom-out;
+	}
+
+	.lightbox-close {
+		position: fixed;
+		top: 0.875rem;
+		right: 0.875rem;
+		display: grid;
+		place-items: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 9999px;
+		background: rgb(255 255 255 / 0.12);
+		color: #fff;
+	}
+
+	.lightbox-close:hover {
+		background: rgb(255 255 255 / 0.22);
+	}
+
+	.lightbox-close svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+</style>

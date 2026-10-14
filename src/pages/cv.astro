@@ -1,0 +1,165 @@
+---
+import Icon from '../components/Icon.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { education, experience, honors, leadership, service, skills, teaching } from '../data/cv';
+import { site } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+/** "Label: rest of the bullet" → ["Label", "rest of the bullet"], so the label can be emphasized. */
+function splitLead(text: string): [string | null, string] {
+	const i = text.indexOf(': ');
+	return i > 0 && i < 70 ? [text.slice(0, i), text.slice(i + 2)] : [null, text];
+}
+
+const sectionClass = 'grid gap-5 py-10 md:grid-cols-[11rem_minmax(0,1fr)] md:gap-10';
+const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle md:pt-1';
+---
+
+<BaseLayout
+	title="CV"
+	description="Curriculum vitae of Kooshan Amini: education, research and industry experience, skills, honors, and service."
+>
+	<PageHeader
+		eyebrow="Curriculum vitae"
+		title="CV"
+		lead="Education, experience, and skills at a glance. The PDF is a two-page version for applications."
+	>
+		<div class="mt-8 flex flex-wrap gap-3">
+			<a href={site.cv.href} class="btn btn-primary">
+				<Icon name="download" />
+				Download PDF
+			</a>
+			<a href="/publications/" class="btn btn-secondary">
+				Publications
+				<Icon name="arrow-right" />
+			</a>
+		</div>
+		<p class="mt-3 text-xs text-subtle">PDF updated {site.cv.updated}</p>
+	</PageHeader>
+
+	<div class="container-site">
+		<div class="divide-y divide-line border-y border-line">
+			<section class={sectionClass} aria-labelledby="education">
+				<h2 id="education" class={headingClass}>Education</h2>
+				<div class="space-y-6">
+					{
+						education.map((entry) => (
+							<div>
+								<div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+									<h3 class="font-semibold text-fg">
+										{entry.title}
+										<span class="font-normal text-muted"> · {entry.org}</span>
+									</h3>
+									<p class="shrink-0 text-sm text-subtle tabular-nums">{entry.dates}</p>
+								</div>
+								{entry.bullets && <p class="mt-1 text-sm leading-relaxed text-muted">{entry.bullets.join(' · ')}</p>}
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="experience">
+				<h2 id="experience" class={headingClass}>Experience</h2>
+				<div class="space-y-10">
+					{
+						experience.map((entry) => (
+							<article>
+								<div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+									<h3 class="font-semibold text-fg">
+										{entry.title}
+										<span class="font-normal text-muted"> · {entry.org}</span>
+									</h3>
+									<p class="shrink-0 text-sm text-subtle tabular-nums">{entry.dates}</p>
+								</div>
+								{entry.summary && <p class="mt-1.5 text-sm leading-relaxed text-muted">{entry.summary}</p>}
+								{entry.bullets && (
+									<ul class="mt-4 list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-body marker:text-line-strong">
+										{entry.bullets.map((bullet) => {
+											const [lead, rest] = splitLead(bullet);
+											return (
+												<li>
+													{lead && <strong class="font-semibold text-fg">{lead}: </strong>}
+													{rest}
+												</li>
+											);
+										})}
+									</ul>
+								)}
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="skills">
+				<h2 id="skills" class={headingClass}>Skills</h2>
+				<dl class="space-y-5">
+					{
+						skills.map((group) => (
+							<div>
+								<dt class="text-sm font-semibold text-fg">{group.group}</dt>
+								<dd class="mt-2">
+									<ul class="flex flex-wrap gap-1.5">
+										{group.items.map((item) => (
+											<li class="chip">{item}</li>
+										))}
+									</ul>
+								</dd>
+							</div>
+						))
+					}
+				</dl>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="honors">
+				<h2 id="honors" class={headingClass}>Honors</h2>
+				<ul class="space-y-3 text-sm leading-relaxed text-body">
+					{
+						honors.map((item) => (
+							<li class="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3">
+								<span class="text-subtle tabular-nums">{item.year}</span>
+								<span>{item.text}</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="service">
+				<h2 id="service" class={headingClass}>Service</h2>
+				<ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-body marker:text-line-strong">
+					{service.map((item) => <li>{item}</li>)}
+				</ul>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="teaching">
+				<h2 id="teaching" class={headingClass}>Teaching & mentoring</h2>
+				<ul class="space-y-3 text-sm leading-relaxed text-body">
+					{
+						teaching.map((item) => (
+							<li class="grid gap-1 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
+								<span class="text-subtle tabular-nums">{item.dates}</span>
+								<span>{item.text}</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<section class={sectionClass} aria-labelledby="leadership">
+				<h2 id="leadership" class={headingClass}>Leadership</h2>
+				<ul class="space-y-3 text-sm leading-relaxed text-body">
+					{
+						leadership.map((item) => (
+							<li class="grid gap-1 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
+								<span class="text-subtle tabular-nums">{item.dates}</span>
+								<span>{item.text}</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</div>
+	</div>
+</BaseLayout>

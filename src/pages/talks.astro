@@ -1,0 +1,65 @@
+---
+import PageHeader from '../components/PageHeader.astro';
+import { conferenceTalks, invitedTalks, workshops, type Talk } from '../data/talks';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate, formatMonth } from '../lib/format';
+
+const sections: { id: string; title: string; items: Talk[] }[] = [
+	{ id: 'invited', title: 'Invited talks', items: invitedTalks },
+	{ id: 'workshops', title: 'Workshops & training', items: workshops },
+	{ id: 'conference', title: 'Conference talks', items: conferenceTalks },
+];
+
+/** Full date when the day is known ("Sep 17, 2026"), otherwise month and year ("Feb 2024"). */
+const when = (iso: string) => (iso.length > 7 ? formatDate(iso) : formatMonth(iso));
+---
+
+<BaseLayout
+	title="Talks"
+	description="Invited talks, webinars, workshops, and conference presentations by Kooshan Amini on AI for disaster imagery, hurricane debris risk, and community resilience modeling."
+>
+	<PageHeader
+		eyebrow="Talks"
+		title="Talks & presentations"
+		lead="Invited webinars and a roundtable, hands-on workshops, and conference talks since 2023 on AI for disaster imagery, hurricane debris risk, and community resilience modeling."
+	/>
+
+	<div class="container-site space-y-16">
+		{
+			sections.map((section) => (
+				<section aria-labelledby={section.id}>
+					<h2 id={section.id} class="flex items-baseline gap-3 text-xl font-semibold tracking-tight text-fg">
+						{section.title}
+						<span class="text-sm font-normal text-subtle tabular-nums">{section.items.length}</span>
+					</h2>
+					<ol class="mt-4 divide-y divide-line border-y border-line">
+						{section.items.map((talk) => (
+							<li class="grid gap-2 py-6 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-6">
+								<p class="text-sm font-medium text-subtle tabular-nums">
+									<time datetime={talk.date}>{when(talk.date)}</time>
+								</p>
+								<div>
+									<p class="text-xs font-semibold uppercase tracking-wider text-accent">{talk.kind}</p>
+									<h3 class="mt-1.5 text-[1.0625rem] font-semibold leading-snug text-fg">
+										{talk.href ? (
+											<a href={talk.href} class="transition-colors hover:text-accent">
+												{talk.title}
+											</a>
+										) : (
+											talk.title
+										)}
+									</h3>
+									<p class="mt-1 text-sm leading-relaxed text-muted">
+										{talk.event}
+										{talk.host && <span> · {talk.host}</span>}
+									</p>
+									{talk.note && <p class="mt-1 text-sm text-subtle">{talk.note}</p>}
+								</div>
+							</li>
+						))}
+					</ol>
+				</section>
+			))
+		}
+	</div>
+</BaseLayout>

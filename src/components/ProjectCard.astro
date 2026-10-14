@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import ProjectCover from './ProjectCover.astro';
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+	headingLevel?: 'h2' | 'h3';
+	/** Responsive `sizes` for the cover image; match the grid the card sits in. */
+	sizes?: string;
+	eager?: boolean;
+}
+
+const {
+	project,
+	headingLevel: Heading = 'h3',
+	sizes = '(min-width: 1152px) 544px, (min-width: 640px) 50vw, 100vw',
+	eager = false,
+} = Astro.props;
+const { title, name, summary, cover, coverAlt, coverFit, motif, tags } = project.data;
+const zoom = 'transition-transform duration-500 ease-out group-hover:scale-[1.025]';
+---
+
+<article
+	class="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-bg transition-[border-color,box-shadow] duration-200 hover:border-line-strong hover:shadow-[0_14px_36px_-18px_rgb(14_22_38/0.28)] has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-accent"
+>
+	<div class="relative aspect-[2/1] overflow-hidden border-b border-line bg-surface">
+		{
+			cover ? (
+				<Image
+					src={cover}
+					alt={coverAlt}
+					widths={[480, 720, 1088]}
+					sizes={sizes}
+					loading={eager ? 'eager' : 'lazy'}
+					class:list={['size-full', zoom, coverFit === 'contain' ? 'bg-figure object-contain p-4' : 'object-cover']}
+				/>
+			) : (
+				<ProjectCover motif={motif} class:list={['size-full', zoom]} />
+			)
+		}
+	</div>
+	<div class="flex flex-1 flex-col p-5 sm:p-6">
+		<p class="text-xs font-medium text-subtle">{name}</p>
+		<Heading class="mt-1.5 text-lg font-semibold leading-snug tracking-tight text-fg">
+			<a href={`/projects/${project.id}/`} class="outline-none after:absolute after:inset-0">{title}</a>
+		</Heading>
+		<p class="mt-2 text-sm leading-relaxed text-muted">{summary}</p>
+		{
+			tags.length > 0 && (
+				<ul class="mt-auto flex flex-wrap gap-1.5 pt-5" aria-label="Topics">
+					{tags.map((tag) => (
+						<li class="chip">{tag}</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</article>

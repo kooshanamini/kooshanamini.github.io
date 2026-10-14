@@ -1,0 +1,291 @@
+---
+import { getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import headshotPortrait from '../assets/headshot-portrait.jpg';
+import headshotSquare from '../assets/headshot-square.jpg';
+import EmailLink from '../components/EmailLink.astro';
+import Icon from '../components/Icon.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { news } from '../data/news';
+import { publications } from '../data/publications';
+import { site } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatMonth } from '../lib/format';
+import { citationsFor, getCitationCounts } from '../lib/openalex';
+
+const featured = (await getCollection('projects'))
+	.filter((project) => project.data.featured)
+	.sort((a, b) => a.data.order - b.data.order);
+const selected = publications.filter((pub) => pub.selected).slice(0, 4);
+const counts = await getCitationCounts();
+
+// Art-directed headshot: a round avatar on small screens, a 4:5 portrait beside the text on desktop.
+const [portrait1x, portrait2x, avatar1x, avatar2x] = await Promise.all([
+	getImage({ src: headshotPortrait, width: 320, format: 'webp' }),
+	getImage({ src: headshotPortrait, width: 640, format: 'webp' }),
+	getImage({ src: headshotSquare, width: 112, format: 'webp' }),
+	getImage({ src: headshotSquare, width: 224, format: 'webp' }),
+]);
+
+const highlights = [
+	{ value: '5', label: 'peer-reviewed journal papers, 4 as first author' },
+	{ value: '0.86', label: 'Dice on a hurricane never seen in training' },
+	{ value: '30,362', label: 'road and bridge segments labeled by open VLMs in 3.1 days' },
+	{ value: '6', label: 'sponsored projects with NSF, NASA, NIST, and Harris County' },
+];
+
+const focus = [
+	{
+		icon: 'scan-eye',
+		title: 'Computer vision & foundation models',
+		text: 'Adapting vision-language and depth foundation models to scarce, shifting real-world imagery: segmentation that transfers to unseen events, monocular 3D estimation, and data-efficient fine-tuning.',
+	},
+	{
+		icon: 'cpu',
+		title: 'ML systems & VLMs at scale',
+		text: 'Config-driven pipelines over terabytes of imagery, open-model VLM inference with vLLM on multiple GPUs, and benchmarks designed so the results can be trusted.',
+	},
+	{
+		icon: 'chart-spline',
+		title: 'Probabilistic & physics-informed modeling',
+		text: 'Bayesian data fusion, Monte Carlo simulation, random fields, and monotonic neural networks that turn model outputs into risk estimates and decisions.',
+	},
+] as const;
+
+const linkedin = site.social.find((item) => item.icon === 'linkedin');
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: site.name,
+	url: site.url,
+	image: new URL('/kooshan-amini.jpg', site.url).href,
+	jobTitle: site.role,
+	description: site.tagline,
+	affiliation: { '@type': 'CollegeOrUniversity', name: 'Rice University' },
+	alumniOf: [
+		{ '@type': 'CollegeOrUniversity', name: 'Sharif University of Technology' },
+		{ '@type': 'CollegeOrUniversity', name: 'University of Guilan' },
+	],
+	knowsAbout: [
+		'Machine learning',
+		'Computer vision',
+		'Vision-language models',
+		'Remote sensing',
+		'Geospatial AI',
+		'Probabilistic modeling',
+		'Risk analysis',
+	],
+	sameAs: site.social.map((item) => item.href),
+};
+---
+
+<BaseLayout type="profile" jsonLd={jsonLd}>
+	<!-- Hero -->
+	<section class="relative isolate">
+		<div aria-hidden="true" class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
+		<div class="container-site grid items-center gap-8 pb-16 pt-12 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16 lg:pb-24 lg:pt-20">
+			<div class="max-w-2xl">
+				<p class="eyebrow">{site.role} · {site.affiliation}</p>
+				<h1 class="mt-3 text-4xl font-semibold tracking-tight text-fg sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
+					{site.name}
+				</h1>
+				<p class="mt-5 text-lg leading-relaxed text-body sm:text-xl sm:leading-relaxed">{site.tagline}</p>
+				<p class="mt-4 leading-relaxed text-muted">
+					At Rice I’m advised by Jamie Padgett, with research co-advised by Hanjie Chen in Computer Science. I adapt
+					vision-language and depth foundation models to real-world imagery, run open VLMs at scale, and pair them
+					with the probabilistic modeling that turns predictions into risk estimates. NASA’s Disasters Program team
+					has used my debris imagery resources and methods.
+				</p>
+
+				<p class="mt-6 inline-flex items-center gap-2.5 rounded-full border border-line bg-bg px-3.5 py-1.5 text-sm">
+					<span class="relative flex size-2" aria-hidden="true">
+						<span class="absolute inline-flex size-full rounded-full bg-success opacity-60 motion-safe:animate-ping"></span>
+						<span class="relative inline-flex size-2 rounded-full bg-success"></span>
+					</span>
+					<span class="font-medium text-fg">{site.availability}</span>
+				</p>
+
+				<div class="mt-8 flex flex-wrap gap-3">
+					<a href="/projects/" class="btn btn-primary">
+						View projects
+						<Icon name="arrow-right" />
+					</a>
+					<a href={site.cv.href} class="btn btn-secondary">
+						<Icon name="download" />
+						Download CV
+					</a>
+					<EmailLink variant="secondary" label="Email" />
+				</div>
+
+				<ul class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm" aria-label="Profiles">
+					{
+						site.social.map((item) => (
+							<li>
+								<a
+									href={item.href}
+									class="inline-flex items-center gap-2 font-medium text-muted transition-colors hover:text-fg"
+								>
+									<Icon name={item.icon} class="size-[18px]" />
+									{item.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+
+			<picture class="order-first block lg:order-none">
+				<source media="(min-width: 1024px)" srcset={`${portrait1x.src} 1x, ${portrait2x.src} 2x`} width="320" height="400" />
+				<img
+					src={avatar1x.src}
+					srcset={`${avatar1x.src} 1x, ${avatar2x.src} 2x`}
+					alt="Portrait of Kooshan Amini"
+					width="112"
+					height="112"
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					class="size-24 rounded-full object-cover ring-1 ring-line sm:size-28 lg:h-[400px] lg:w-[320px] lg:rounded-[1.75rem] lg:shadow-[0_28px_64px_-32px_rgb(14_22_38/0.5)]"
+				/>
+			</picture>
+		</div>
+	</section>
+
+	<!-- Highlights -->
+	<section aria-label="Highlights" class="border-y border-line bg-surface">
+		<dl class="container-site grid grid-cols-2 lg:grid-cols-4">
+			{
+				highlights.map((item, i) => (
+					<div
+						class:list={[
+							'flex flex-col-reverse gap-1 py-6 pr-4 sm:py-8',
+							i % 2 === 1 && 'border-l border-line pl-4 sm:pl-6',
+							i >= 2 && 'border-t border-line lg:border-t-0',
+							i === 2 && 'lg:border-l lg:pl-6',
+						]}
+					>
+						<dt class="text-sm leading-snug text-muted">{item.label}</dt>
+						<dd class="text-2xl font-semibold tracking-tight text-fg tabular-nums sm:text-3xl">{item.value}</dd>
+					</div>
+				))
+			}
+		</dl>
+	</section>
+
+	<!-- Focus areas -->
+	<section class="container-site py-20 sm:py-24" aria-labelledby="focus">
+		<SectionHeader
+			id="focus"
+			eyebrow="What I work on"
+			title="Methods first, applied where decisions are hard"
+			description="Hurricanes and floods are where I apply these methods: high stakes, scarce labels, and data that shifts from one event to the next."
+		/>
+		<div class="mt-10 grid gap-5 md:grid-cols-3">
+			{
+				focus.map((item) => (
+					<div class="rounded-2xl border border-line bg-bg p-6">
+						<span class="grid size-10 place-items-center rounded-xl bg-accent-soft text-accent">
+							<Icon name={item.icon} class="size-5" />
+						</span>
+						<h3 class="mt-5 font-semibold tracking-tight text-fg">{item.title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<!-- Selected projects -->
+	<section class="container-site" aria-labelledby="work">
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<SectionHeader id="work" eyebrow="Selected work" title="Projects" />
+			<a href="/projects/" class="link inline-flex items-center gap-1.5 text-sm">
+				All projects <Icon name="arrow-right" class="size-3.5" />
+			</a>
+		</div>
+		<div class="mt-8 grid gap-6 sm:grid-cols-2">
+			{featured.map((project) => <ProjectCard project={project} />)}
+		</div>
+	</section>
+
+	<!-- Publications and news -->
+	<section class="container-site grid gap-16 py-20 sm:py-24 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-14">
+		<div aria-labelledby="papers">
+			<div class="flex flex-wrap items-end justify-between gap-4">
+				<SectionHeader id="papers" eyebrow="Research" title="Selected publications" />
+				<a href="/publications/" class="link inline-flex items-center gap-1.5 text-sm">
+					All publications <Icon name="arrow-right" class="size-3.5" />
+				</a>
+			</div>
+			<ol class="mt-6 divide-y divide-line border-y border-line">
+				{
+					selected.map((pub) => (
+						<li class="py-6">
+							<PublicationItem pub={pub} citations={citationsFor(counts, pub.doi)} />
+						</li>
+					))
+				}
+			</ol>
+		</div>
+
+		<div aria-labelledby="news">
+			<SectionHeader id="news" eyebrow="Updates" title="News" />
+			<ol class="mt-8 space-y-6 border-l border-line pl-6">
+				{
+					news.slice(0, 7).map((item) => (
+						<li class="relative">
+							<span
+								aria-hidden="true"
+								class="absolute -left-[29px] top-1 size-2.5 rounded-full border-2 border-bg bg-accent"
+							/>
+							<p class="text-xs font-medium text-subtle tabular-nums">
+								<time datetime={item.date}>{item.label ?? formatMonth(item.date)}</time>
+							</p>
+							<p class="mt-1 text-sm leading-relaxed text-body">
+								{item.href ? (
+									<a href={item.href} class="transition-colors hover:text-accent">
+										{item.text}
+									</a>
+								) : (
+									item.text
+								)}
+							</p>
+						</li>
+					))
+				}
+			</ol>
+		</div>
+	</section>
+
+	<!-- Contact -->
+	<section id="contact" class="container-site scroll-mt-24" aria-labelledby="contact-title">
+		<div class="relative isolate overflow-hidden rounded-3xl border border-line bg-surface px-6 py-12 sm:px-12 sm:py-16">
+			<div aria-hidden="true" class="dot-grid absolute inset-0 -z-10"></div>
+			<div class="max-w-2xl">
+				<p class="eyebrow">Contact</p>
+				<h2 id="contact-title" class="mt-2 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Let’s talk</h2>
+				<p class="mt-4 leading-relaxed text-muted">
+					I’m looking for Summer 2027 internships in machine learning engineering, applied and research science,
+					computer vision, and software engineering. I’m also always glad to talk about geospatial AI, evaluating
+					vision-language models, or risk modeling.
+				</p>
+				<p class="mt-3 text-sm font-medium text-fg">No visa sponsorship required.</p>
+				<div class="mt-8 flex flex-wrap gap-3">
+					<EmailLink variant="primary" label="Email me" />
+					{
+						linkedin && (
+							<a href={linkedin.href} class="btn btn-secondary">
+								<Icon name="linkedin" />
+								LinkedIn
+							</a>
+						)
+					}
+				</div>
+				<p class="mt-6 text-sm text-muted">Or write to <EmailLink variant="text" />.</p>
+			</div>
+		</div>
+	</section>
+</BaseLayout>

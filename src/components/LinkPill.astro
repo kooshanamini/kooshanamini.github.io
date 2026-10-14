@@ -1,0 +1,29 @@
+---
+import type { LinkKind } from '../data/publications';
+import Icon from './Icon.astro';
+
+interface Props {
+	href: string;
+	label: string;
+	kind?: LinkKind | 'project';
+}
+
+const { href, label, kind } = Astro.props;
+const icons = {
+	paper: 'file-text',
+	preprint: 'file-text',
+	code: 'code',
+	data: 'database',
+	model: 'box',
+	pr: 'git-pull-request',
+	project: 'arrow-right',
+} as const;
+---
+
+<a
+	href={href}
+	class="inline-flex items-center gap-1.5 rounded-md border border-line bg-bg px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-line-strong hover:text-fg"
+>
+	{kind && <Icon name={icons[kind]} class="size-3.5" />}
+	{label}
+</a>

@@ -1,0 +1,46 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+
+interface Props {
+	variant?: 'primary' | 'secondary' | 'icon' | 'text' | 'plain';
+	label?: string;
+	class?: string;
+}
+
+const { variant = 'text', label = 'Email', class: className } = Astro.props;
+
+// The address is stored reversed and split, and reassembled in the browser:
+// light protection against scrapers. Without JavaScript the link points to the contact section.
+const reverse = (value: string) => [...value].reverse().join('');
+const styles = {
+	primary: 'btn btn-primary',
+	secondary: 'btn btn-secondary',
+	icon: 'grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-surface hover:text-fg',
+	text: 'link',
+	plain: 'transition-colors hover:text-fg',
+};
+const withIcon = variant === 'primary' || variant === 'secondary' || variant === 'icon';
+---
+
+<a
+	href="/#contact"
+	data-u={reverse(site.email.user)}
+	data-d={reverse(site.email.domain)}
+	class:list={[styles[variant], className]}
+	aria-label={variant === 'icon' ? 'Email' : undefined}
+>
+	{withIcon && <Icon name="mail" class={variant === 'icon' ? 'size-[18px]' : 'size-4'} />}
+	{variant === 'text' && <span data-address>{site.email.user} [at] {site.email.domain}</span>}
+	{variant !== 'text' && variant !== 'icon' && <span>{label}</span>}
+</a>
+
+<script>
+	const reverse = (value: string) => [...value].reverse().join('');
+	for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-u][data-d]')) {
+		const address = `${reverse(link.dataset.u ?? '')}@${reverse(link.dataset.d ?? '')}`;
+		link.href = `mailto:${address}`;
+		const text = link.querySelector('[data-address]');
+		if (text) text.textContent = address;
+	}
+</script>
