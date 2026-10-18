@@ -40,6 +40,7 @@ const withIcon = variant === 'primary' || variant === 'secondary' || variant ===
 	for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-u][data-d]')) {
 		const address = `${reverse(link.dataset.u ?? '')}@${reverse(link.dataset.d ?? '')}`;
 		link.href = `mailto:${address}`;
+		link.addEventListener('click', () => window.gtag?.('event', 'email_click', { page_path: location.pathname }));
 		const text = link.querySelector('[data-address]');
 		if (text) text.textContent = address;
 	}

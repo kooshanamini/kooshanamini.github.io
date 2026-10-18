@@ -16,7 +16,7 @@ export const education: Entry[] = [
 	{
 		title: 'Ph.D., Engineering',
 		org: 'Rice University',
-		dates: '2022 – Expected Fall 2027',
+		dates: '2022 – Expected Dec 2027',
 		bullets: [
 			'GPA 3.96/4.00',
 			`Advisor: [${padgett.fullName}](${padgett.href}); research co-advised with [${chen.fullName}](${chen.href}) (Computer Science)`,

@@ -21,6 +21,8 @@ const { title, description = site.description, image, type = 'website', jsonLd, 
 const fullTitle = title ? `${title} — ${site.name}` : site.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image ?? '/og.png', Astro.site);
+// Analytics only on the deployed site, so local previews are not counted.
+const gaId = import.meta.env.PROD ? site.analytics.gaMeasurementId : undefined;
 ---
 
 <!doctype html>
@@ -73,6 +75,15 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
 		</script>
 		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 		<meta name="generator" content={Astro.generator} />
+		{gaId && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />}
+		{
+			gaId && (
+				<script
+					is:inline
+					set:html={`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}
+				/>
+			)
+		}
 	</head>
 	<body class="flex min-h-dvh flex-col">
 		<a href="#main" class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50">

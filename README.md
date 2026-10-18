@@ -23,6 +23,7 @@ npm run preview   # serve dist/ locally
 | Name, tagline, links, navigation, email | `src/data/site.ts` |
 | Publications, datasets, software | `src/data/publications.ts` |
 | Google Scholar citation counts | `src/data/citations.ts` |
+| Google Analytics measurement ID | `src/data/site.ts` (`analytics`) |
 | News items (home page) | `src/data/news.ts` |
 | Talks and workshops | `src/data/talks.ts` |
 | Web CV (education, experience, skills, honors) | `src/data/cv.ts` |

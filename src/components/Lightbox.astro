@@ -33,6 +33,7 @@
 			large.src = largestSource(img);
 			large.alt = img.alt;
 			dialog.showModal();
+			window.gtag?.('event', 'figure_zoom', { figure: img.alt.slice(0, 100), page_path: location.pathname });
 		};
 		const figures = document.querySelectorAll<HTMLImageElement>('.prose-site p > img:only-child, img[data-zoomable]');
 		for (const img of figures) {

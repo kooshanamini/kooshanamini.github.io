@@ -1,0 +1,28 @@
+---
+import EmailLink from '../components/EmailLink.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy" description="How this website uses analytics.">
+	<PageHeader eyebrow="Privacy" title="Privacy" lead="A short note on what this site measures." />
+	<div class="container-site">
+		<div class="max-w-2xl space-y-5 leading-relaxed text-body">
+			<p>
+				This site uses Google Analytics to understand how visitors find and use it: which pages are viewed, the site
+				that referred you, your approximate location (city level), and your device and browser. Google Analytics sets
+				cookies to tell new and returning visitors apart. It does not store IP addresses.
+			</p>
+			<p>
+				The site has no ads, sells no data, and does not ask for names or contact details. The figures are aggregate
+				statistics used only to improve the site.
+			</p>
+			<p>
+				To opt out, use your browser's privacy settings, a content blocker, or Google's <a
+					href="https://tools.google.com/dlpage/gaoptout"
+					class="link">opt-out add-on</a
+				>. Questions are welcome at <EmailLink variant="text" />.
+			</p>
+		</div>
+	</div>
+</BaseLayout>

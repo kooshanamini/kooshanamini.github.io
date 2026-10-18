@@ -23,6 +23,8 @@ export const site = {
 		{ label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=IeIQM1kAAAAJ', icon: 'scholar' },
 	],
 	cv: { href: '/cv/Kooshan_Amini_CV.pdf', updated: 'October 2026' },
+	// Google Analytics 4 (property owned by Kooshan's Google account). Loaded only in production builds.
+	analytics: { gaMeasurementId: 'G-31C9SEF04P' },
 	nav: [
 		{ label: 'Projects', href: '/projects/' },
 		{ label: 'Publications', href: '/publications/' },

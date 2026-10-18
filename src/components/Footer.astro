@@ -69,7 +69,7 @@ const updated = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric
 		<div
 			class="container-site flex flex-col gap-1.5 py-6 text-xs text-subtle sm:flex-row sm:items-center sm:justify-between"
 		>
-			<p>© {now.getFullYear()} {site.name}</p>
+			<p>© {now.getFullYear()} {site.name} · <a href="/privacy/" class="transition-colors hover:text-fg">Privacy</a></p>
 			<p>Updated {updated} · Built with Astro, hosted on GitHub Pages</p>
 		</div>
 	</div>
