@@ -1,7 +1,7 @@
 ---
 title: Debris volume from a single aerial image
 name: DebrisHeightNet · arXiv 2026
-summary: A compact network on a frozen monocular-depth foundation model estimates debris height and volume from one aerial image, landing within 30% of hauled volume where standard forecasts over-predict by 2.7–4.8×.
+summary: A compact network on a frozen monocular-depth foundation model estimates debris height and volume from one aerial image; on its training island, it lands within 30% of hauled volume where Hazus and FEMA-hybrid forecasts over-predict by 2.7–4.8×.
 order: 2
 featured: true
 role: First author and sole developer of the research code
@@ -10,9 +10,9 @@ tags: [Monocular depth, Foundation models, Uncertainty estimation]
 stack: [PyTorch, Depth Anything V2, LiDAR & DEM processing, rasterio, GeoPandas, NumPy]
 metrics:
   - value: ρ = 0.87
-    label: Spearman correlation with UAV surveys on 1,740 grid cells
+    label: Spearman correlation with an independent UAV survey of the training island (1,740 grid cells)
   - value: within 30%
-    label: of hauled volume, where Hazus over-predicts 4.8× and FEMA 2.7×
+    label: of hauled volume on the training island, where Hazus over-predicts 4.8× and the FEMA hybrid 2.7×
   - value: 10 · 5 · 3
     label: regions, hurricanes, and states in the evaluation
 links:
@@ -43,11 +43,11 @@ Debris removal is planned, contracted, and reimbursed by volume, yet standard fo
 
 ## Results
 
-Evaluated on 10 regions from 5 hurricanes across 3 states (about 338 km²):
+Trained on one region (Estero Island, Hurricane Ian) and evaluated on 10 regions from 5 hurricanes across 3 states (about 338 km²):
 
-- **Spearman ρ = 0.87** against UAV structure-from-motion surveys on 1,740 grid cells.
+- At Estero Island, **Spearman ρ = 0.87** against an independent UAV structure-from-motion survey on 1,740 grid cells.
 - At Estero Island, the estimate (239,000 m³) is within 30% of the roughly 188,000 m³ actually hauled, where Hazus over-predicts 4.8× and the FEMA hybrid method 2.7×.
-- Calibration cuts the median error factor from 2.7× to 1.9×; the held-out height error (MAE) is 0.58 m.
+- In unseen regions, the uncalibrated model under-detects thin, dispersed debris; region-level calibration, tested leave-one-out across all 10 regions, cuts the median error factor from 2.7× to 1.9×. The held-out height error (MAE) on Estero test cells is 0.58 m.
 - A useful negative result: training on one clean region generalized better than pooling several regions, in 3 of 4 unseen regions.
 
 ![Five hurricanes side by side: regional debris volume maps, CLIPSeg-debris detections, and DebrisHeightNet height maps](../../assets/projects/debrisheightnet-spatial.webp)
