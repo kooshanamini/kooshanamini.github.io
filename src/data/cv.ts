@@ -45,7 +45,7 @@ export const experience: Entry[] = [
 			'System architecture (NSF OpenSafe.AI): project coordinator and system architect; versioned JSON-Schema interfaces and Model Context Protocol (MCP) modules; Bayesian fusion raised held-out AUC 0.654 → 0.707 in 11 of 11 forecast cycles.',
 			'Real-time flood analytics (Harris County Flood Control District): reduced a 99-map scenario library to 29 maps (−71%) with PCA and k-medoids (RMSE 0.27 ft, F1 ≈ 0.95); 6–7× faster validation with CuPy GPU kernels.',
 			'Physics-informed learning: a monotonic neural network coupled with sea-level-rise scenarios and 9 × 1,000 Monte Carlo network simulations; projected debris +11–14% and emergency-access loss +9–17% by 2040. ASCE Natural Hazards Review, in press.',
-			'Decision support and open source (NIST Center of Excellence): first author of a 16-author study in which a $200M mitigation plan cuts expected losses by $192M; merged a power-network recovery analysis (+1,417 lines) into NCSA’s IN-CORE.',
+			'Decision support and open source (NIST Center of Excellence): first author of a 16-author study whose optimized mitigation plan displaces about 1,500 fewer people and shortens recovery by 15 days; merged a power-network recovery analysis (+1,417 lines) into NCSA’s IN-CORE.',
 		],
 	},
 	{

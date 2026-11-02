@@ -1,5 +1,7 @@
 ---
-import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4/opsz.css';
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource-variable/ibm-plex-sans/wght-italic.css';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -39,8 +41,7 @@ const gaId = import.meta.env.PROD ? site.analytics.gaMeasurementId : undefined;
 		<link rel="icon" href="/favicon.ico" sizes="32x32" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
-		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#eef3f5" />
 
 		<meta property="og:type" content={type} />
 		<meta property="og:site_name" content={site.name} />
@@ -54,23 +55,16 @@ const gaId = import.meta.env.PROD ? site.analytics.gaMeasurementId : undefined;
 		<meta name="twitter:card" content="summary_large_image" />
 
 		<script is:inline>
-			// Apply the saved theme, or the system theme, before first paint.
+			// Light by default; dark only after a visitor picks it with the toggle. Runs before first paint.
 			(() => {
-				const root = document.documentElement;
-				const media = window.matchMedia('(prefers-color-scheme: dark)');
-				const saved = () => {
-					try {
-						const value = localStorage.getItem('theme');
-						return value === 'light' || value === 'dark' ? value : null;
-					} catch {
-						return null;
-					}
-				};
-				const apply = (theme) => root.classList.toggle('dark', theme === 'dark');
-				apply(saved() ?? (media.matches ? 'dark' : 'light'));
-				media.addEventListener('change', (event) => {
-					if (!saved()) apply(event.matches ? 'dark' : 'light');
-				});
+				let dark = false;
+				try {
+					dark = localStorage.getItem('theme') === 'dark';
+				} catch {
+					// Storage unavailable (private mode, blocked site data): stay light.
+				}
+				document.documentElement.classList.toggle('dark', dark);
+				if (dark) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#0e1820');
 			})();
 		</script>
 		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

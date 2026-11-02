@@ -1,11 +1,11 @@
 ---
 title: Debris volume from a single aerial image
-name: DebrisHeightNet · arXiv 2026
+name: DebrisHeightNet, arXiv 2026
 summary: A compact network on a frozen monocular-depth foundation model estimates debris height and volume from one aerial image; on its training island, it lands within 30% of hauled volume where Hazus and FEMA-hybrid forecasts over-predict by 2.7–4.8×.
 order: 2
 featured: true
 role: First author and sole developer of the research code
-context: arXiv preprint, 2026 · under review at ISPRS Journal of Photogrammetry and Remote Sensing
+context: arXiv preprint, 2026; under review at ISPRS Journal of Photogrammetry and Remote Sensing
 tags: [Monocular depth, Foundation models, Uncertainty estimation]
 stack: [PyTorch, Depth Anything V2, LiDAR & DEM processing, rasterio, GeoPandas, NumPy]
 metrics:
@@ -13,7 +13,7 @@ metrics:
     label: Spearman correlation with an independent UAV survey of the training island (1,740 grid cells)
   - value: within 30%
     label: of hauled volume on the training island, where Hazus over-predicts 4.8× and the FEMA hybrid 2.7×
-  - value: 10 · 5 · 3
+  - value: 10 / 5 / 3
     label: regions, hurricanes, and states in the evaluation
 links:
   - label: arXiv

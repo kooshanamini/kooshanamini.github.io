@@ -1,6 +1,6 @@
 ---
 title: Zero-shot road and bridge damage mapping with open VLMs
-name: NASA ROSES · Satellite VLM pipeline
+name: NASA ROSES, satellite VLM pipeline
 summary: A 37-stage, config-driven pipeline that turns 2.1 TB of commercial satellite imagery into road- and bridge-level damage labels with open vision-language models — 30,362 segments in 3.1 days at $0 in API fees.
 order: 3
 featured: true

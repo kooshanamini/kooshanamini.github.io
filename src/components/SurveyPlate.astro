@@ -1,0 +1,583 @@
+---
+import { getImage, Image } from 'astro:assets';
+import heroArt from '../assets/hero/coastline-engraving.webp';
+import heroFills from '../assets/hero/coastline-engraving-fills.webp';
+
+/**
+ * The hero drawing with a movable survey tile. Inside the tile the drawing shows its debris map: class fills in the
+ * legend colors of the CLIPSeg-debris paper, read from a segmented render aligned to the drawing pixel for pixel.
+ * The readout under the tile reports each class's share of the classified ground inside it.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+
+// The square drawn into the picture, in pixels of the 1536 x 1024 drawing: the tile rests here.
+const tile = { x: 877, y: 286, w: 335, h: 319 };
+const fills = await getImage({ src: heroFills, width: 1536, format: 'webp' });
+---
+
+<div
+	class:list={['survey', className]}
+	data-survey
+	data-tile={JSON.stringify(tile)}
+	data-width={heroArt.width}
+	data-height={heroArt.height}
+>
+	<div class="survey-plate develop">
+		<Image
+			src={heroArt}
+			alt=""
+			widths={[768, 1152, 1536]}
+			sizes="(min-width: 1024px) 74vw, 100vw"
+			loading="eager"
+			fetchpriority="high"
+			class="survey-base"
+		/>
+		<img src={fills.src} alt="" width="1536" height="1024" decoding="async" class="survey-fills" data-fills />
+	</div>
+	<div class="survey-lens" data-lens aria-hidden="true">
+		<span class="survey-corner tl"></span><span class="survey-corner tr"></span>
+		<span class="survey-corner bl"></span><span class="survey-corner br"></span>
+		<span class="survey-label">
+			<span><i class="swatch high"></i><b data-share="high">–</b> dense</span>
+			<span><i class="swatch low"></i><b data-share="low">–</b> scattered</span>
+			<span><i class="swatch clear"></i><b data-share="clear">–</b> clear</span>
+		</span>
+	</div>
+</div>
+
+<style>
+	.survey {
+		--focus: 80% 50%;
+		--lens-min-x: 0;
+		--lens-min-y: 0;
+		position: relative;
+		aspect-ratio: 1;
+		max-height: 88svh;
+		width: 100%;
+		touch-action: pan-y;
+	}
+
+	/* Wide screens: the drawing fills the right of the hero. It starts a little below the top and fades in, so the
+	   navigation stays on pale paper. */
+	@media (min-width: 1024px) {
+		.survey {
+			--focus: 70% 42%;
+			--lens-min-x: 0.42;
+			--lens-min-y: 3rem;
+			position: absolute;
+			inset: 0.9375rem 0 0 auto;
+			aspect-ratio: auto;
+			max-height: none;
+			width: 74%;
+		}
+	}
+
+	/* The drawing and its fills blend into the page as one group; the edges fade into the paper. */
+	.survey-plate {
+		position: absolute;
+		inset: 0;
+		mix-blend-mode: multiply;
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 86%, transparent 100%),
+			linear-gradient(to right, transparent 0%, #000 8%);
+		mask-composite: intersect;
+		pointer-events: none;
+	}
+
+	@media (min-width: 1024px) {
+		.survey-plate {
+			mask-image:
+				linear-gradient(to right, transparent 20%, #000 52%), linear-gradient(to top, transparent 0%, #000 14%),
+				linear-gradient(to bottom, transparent 0, #000 3rem);
+		}
+	}
+
+	.survey-plate :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: var(--focus);
+	}
+
+	.survey-fills {
+		mix-blend-mode: multiply;
+		opacity: 0.8;
+		clip-path: inset(50%);
+	}
+
+	.survey-lens {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 0;
+		height: 0;
+		opacity: 0;
+		touch-action: none;
+		will-change: transform;
+		outline: 1px solid color-mix(in srgb, var(--fg) 45%, transparent);
+		transition: outline-color 0.3s ease;
+	}
+
+	.survey[data-ready] .survey-lens {
+		opacity: 1;
+		transition:
+			opacity 0.6s ease 0.9s,
+			outline-color 0.3s ease;
+	}
+
+	.survey[data-carrying] .survey-lens {
+		outline-color: color-mix(in srgb, var(--fg) 80%, transparent);
+	}
+
+	/* Corner brackets, like an annotation box. They open a little when the pointer comes near. */
+	.survey-corner {
+		position: absolute;
+		width: 14px;
+		height: 14px;
+		border: 0 solid var(--fg);
+		transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.survey-corner.tl {
+		top: -5px;
+		left: -5px;
+		border-top-width: 2px;
+		border-left-width: 2px;
+	}
+	.survey-corner.tr {
+		top: -5px;
+		right: -5px;
+		border-top-width: 2px;
+		border-right-width: 2px;
+	}
+	.survey-corner.bl {
+		bottom: -5px;
+		left: -5px;
+		border-bottom-width: 2px;
+		border-left-width: 2px;
+	}
+	.survey-corner.br {
+		right: -5px;
+		bottom: -5px;
+		border-right-width: 2px;
+		border-bottom-width: 2px;
+	}
+
+	.survey-lens[data-near] .survey-corner.tl {
+		translate: -4px -4px;
+	}
+	.survey-lens[data-near] .survey-corner.tr {
+		translate: 4px -4px;
+	}
+	.survey-lens[data-near] .survey-corner.bl {
+		translate: -4px 4px;
+	}
+	.survey-lens[data-near] .survey-corner.br {
+		translate: 4px 4px;
+	}
+
+	.survey-label {
+		position: absolute;
+		top: calc(100% + 9px);
+		left: -5px;
+		display: flex;
+		gap: 0.75rem;
+		padding: 0.3rem 0.55rem;
+		background: var(--fg);
+		color: var(--bg);
+		font-size: 0.75rem;
+		line-height: 1.2;
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Near the right edge the label hangs from the tile's right corner instead. */
+	.survey-lens[data-flip] .survey-label {
+		right: -5px;
+		left: auto;
+	}
+
+	.survey-label > span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.survey-label b {
+		font-weight: 600;
+	}
+
+	.swatch {
+		width: 0.55rem;
+		height: 0.55rem;
+	}
+	.swatch.high {
+		background: #ff4400;
+	}
+	.swatch.low {
+		background: #ffd701;
+	}
+	.swatch.clear {
+		background: #88ceeb;
+	}
+
+	@media (max-width: 639px) {
+		.survey-label {
+			gap: 0.5rem;
+			font-size: 0.6875rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.survey-corner {
+			transition: none;
+		}
+	}
+
+	:global(.dark) .survey-plate {
+		mix-blend-mode: screen;
+	}
+
+	:global(.dark) .survey-base {
+		filter: invert(1) hue-rotate(180deg) brightness(0.85);
+	}
+
+	:global(.dark) .survey-fills {
+		mix-blend-mode: normal;
+		opacity: 0.62;
+	}
+</style>
+
+<script>
+	type Share = 'clear' | 'low' | 'high';
+	type Point = { x: number; y: number };
+
+	// Distances are CSS px. The tile moves on a critically damped spring; a higher rate is a tighter spring.
+	const NEAR = 72; // the corners open when the pointer comes this close to the tile
+	const PICK_UP = 8; // the pointer takes hold of the tile this close to its edge, or anywhere inside it
+	const PASSING = 1.1; // px per ms: a pointer moving faster than this is passing by, not reaching for the tile
+	const LET_GO = 120; // a carried tile lets go when the pointer runs this far past it (it stops at the drawing's edge)
+	const HOME_DELAY = 450; // ms after letting go before the tile glides back to its square
+	const RATE = { carry: 24, drag: 45, tap: 12, home: 8 };
+
+	function initSurvey(root: HTMLElement) {
+		const base = root.querySelector<HTMLImageElement>('.survey-base');
+		const fills = root.querySelector<HTMLImageElement>('[data-fills]');
+		const lens = root.querySelector<HTMLElement>('[data-lens]');
+		const label = root.querySelector<HTMLElement>('.survey-label');
+		if (!base || !fills || !lens || !label) return;
+
+		const W = Number(root.dataset.width);
+		const H = Number(root.dataset.height);
+		const tile = JSON.parse(root.dataset.tile ?? '{}') as { x: number; y: number; w: number; h: number };
+		const home: Point = { x: tile.x + tile.w / 2, y: tile.y + tile.h / 2 };
+		// Tile centers in drawing pixels: where it is drawn, where it is heading, and its speed.
+		const pos: Point = { ...home };
+		const target: Point = { ...home };
+		const vel: Point = { x: 0, y: 0 };
+		const outputs = Object.fromEntries(
+			(['clear', 'low', 'high'] as Share[]).map((key) => [key, root.querySelector<HTMLElement>(`[data-share="${key}"]`)]),
+		) as Record<Share, HTMLElement | null>;
+		const shown: Record<Share, string> = { clear: '', low: '', high: '' };
+		const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+		// Geometry of the cover-fitted drawing inside the plate (CSS px), and the range the tile's center may take
+		// (drawing px) so that the tile and its label stay on the visible part of the drawing.
+		let scale = 1;
+		let ox = 0;
+		let oy = 0;
+		let boxW = 0;
+		let boxH = 0;
+		let labelW = 0;
+		const range = { x0: 0, x1: 0, y0: 0, y1: 0 };
+
+		function measure() {
+			boxW = root.clientWidth;
+			boxH = root.clientHeight;
+			scale = Math.max(boxW / W, boxH / H);
+			const [fx, fy] = getComputedStyle(base!).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
+			ox = (boxW - W * scale) * (Number.isFinite(fx) ? fx : 0.5);
+			oy = (boxH - H * scale) * (Number.isFinite(fy) ? fy : 0.5);
+			const style = getComputedStyle(root);
+			const minX = parseFloat(style.getPropertyValue('--lens-min-x')) * boxW || 0;
+			const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+			const minYRaw = style.getPropertyValue('--lens-min-y').trim();
+			const minY = minYRaw.endsWith('rem') ? parseFloat(minYRaw) * rem : parseFloat(minYRaw) || 0;
+			const halfW = (tile.w * scale) / 2;
+			const halfH = (tile.h * scale) / 2;
+			const labelRoom = 34;
+			range.x0 = (Math.max(minX, ox) + halfW + 6 - ox) / scale;
+			range.x1 = (Math.min(boxW, ox + W * scale) - halfW - 6 - ox) / scale;
+			range.y0 = (Math.max(minY, oy) + halfH + 6 - oy) / scale;
+			range.y1 = (Math.min(boxH, oy + H * scale) - halfH - labelRoom - oy) / scale;
+			lens!.style.width = `${tile.w * scale}px`;
+			lens!.style.height = `${tile.h * scale}px`;
+			labelW = label!.offsetWidth;
+		}
+
+		function clampPoint(p: Point): Point {
+			const { x0, x1, y0, y1 } = range;
+			return {
+				x: x0 < x1 ? Math.min(Math.max(p.x, x0), x1) : (x0 + x1) / 2,
+				y: y0 < y1 ? Math.min(Math.max(p.y, y0), y1) : (y0 + y1) / 2,
+			};
+		}
+
+		// Distance in CSS px from a point to the edge of the tile centered at c; 0 inside the tile.
+		function gap(p: Point, c: Point) {
+			const dx = Math.max(0, Math.abs(p.x - c.x) - tile.w / 2);
+			const dy = Math.max(0, Math.abs(p.y - c.y) - tile.h / 2);
+			return Math.hypot(dx, dy) * scale;
+		}
+
+		// Class map at a quarter of the drawing's resolution, as summed-area tables for constant-time shares.
+		const step = 4;
+		const mapW = Math.round(W / step);
+		const mapH = Math.round(H / step);
+		let tables: Record<Share, Uint32Array> | null = null;
+
+		function buildTables() {
+			const canvas = document.createElement('canvas');
+			canvas.width = mapW;
+			canvas.height = mapH;
+			const ctx = canvas.getContext('2d', { willReadFrequently: true });
+			if (!ctx) return;
+			ctx.drawImage(fills!, 0, 0, mapW, mapH);
+			const data = ctx.getImageData(0, 0, mapW, mapH).data;
+			const next = {
+				clear: new Uint32Array((mapW + 1) * (mapH + 1)),
+				low: new Uint32Array((mapW + 1) * (mapH + 1)),
+				high: new Uint32Array((mapW + 1) * (mapH + 1)),
+			};
+			for (let y = 0; y < mapH; y++) {
+				let rowClear = 0;
+				let rowLow = 0;
+				let rowHigh = 0;
+				for (let x = 0; x < mapW; x++) {
+					const i = (y * mapW + x) * 4;
+					if (data[i + 3] > 110) {
+						const r = data[i];
+						const g = data[i + 1];
+						const b = data[i + 2];
+						if (b > r) rowClear++;
+						else if (g > 150) rowLow++;
+						else rowHigh++;
+					}
+					const k = (y + 1) * (mapW + 1) + x + 1;
+					const up = y * (mapW + 1) + x + 1;
+					next.clear[k] = next.clear[up] + rowClear;
+					next.low[k] = next.low[up] + rowLow;
+					next.high[k] = next.high[up] + rowHigh;
+				}
+			}
+			tables = next;
+		}
+
+		function sum(table: Uint32Array, x0: number, y0: number, x1: number, y1: number) {
+			const w = mapW + 1;
+			return table[y1 * w + x1] - table[y0 * w + x1] - table[y1 * w + x0] + table[y0 * w + x0];
+		}
+
+		function readout() {
+			if (!tables) return;
+			const cell = (v: number, max: number) => Math.min(max, Math.max(0, Math.round(v / step)));
+			const x0 = cell(pos.x - tile.w / 2, mapW);
+			const x1 = cell(pos.x + tile.w / 2, mapW);
+			const y0 = cell(pos.y - tile.h / 2, mapH);
+			const y1 = cell(pos.y + tile.h / 2, mapH);
+			const counts = {
+				clear: sum(tables.clear, x0, y0, x1, y1),
+				low: sum(tables.low, x0, y0, x1, y1),
+				high: sum(tables.high, x0, y0, x1, y1),
+			};
+			const total = counts.clear + counts.low + counts.high;
+			const area = Math.max(1, (x1 - x0) * (y1 - y0));
+			for (const key of ['clear', 'low', 'high'] as Share[]) {
+				const text = total < area * 0.04 ? '–' : `${Math.round((100 * counts[key]) / total)}%`;
+				if (shown[key] === text) continue;
+				shown[key] = text;
+				if (outputs[key]) outputs[key].textContent = text;
+			}
+		}
+
+		function render() {
+			const lw = tile.w * scale;
+			const lh = tile.h * scale;
+			const left = ox + pos.x * scale - lw / 2;
+			const top = oy + pos.y * scale - lh / 2;
+			lens!.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+			fills!.style.clipPath = `inset(${top}px ${boxW - left - lw}px ${boxH - top - lh}px ${left}px)`;
+			lens!.toggleAttribute('data-flip', left - 5 + labelW > boxW - 4);
+			readout();
+		}
+
+		// The spring, solved exactly per frame, so it stays smooth at any frame rate.
+		let rate = RATE.home;
+		let frame = 0;
+		let last = 0;
+		let returning = false;
+
+		function tick(now: number) {
+			const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
+			last = now;
+			const decay = Math.exp(-rate * dt);
+			let moving = false;
+			for (const axis of ['x', 'y'] as const) {
+				const offset = pos[axis] - target[axis];
+				const c = vel[axis] + rate * offset;
+				pos[axis] = target[axis] + (offset + c * dt) * decay;
+				vel[axis] = (vel[axis] - rate * c * dt) * decay;
+				if (Math.abs(pos[axis] - target[axis]) > 0.05 || Math.abs(vel[axis]) > 1) moving = true;
+			}
+			if (!moving) {
+				Object.assign(pos, target);
+				Object.assign(vel, { x: 0, y: 0 });
+				returning = false;
+			}
+			render();
+			frame = moving ? requestAnimationFrame(tick) : 0;
+		}
+
+		function aim(p: Point, nextRate: number) {
+			Object.assign(target, clampPoint(p));
+			rate = nextRate;
+			if (reduceMotion.matches) {
+				cancelAnimationFrame(frame);
+				frame = 0;
+				Object.assign(pos, target);
+				returning = false;
+				render();
+			} else if (!frame) {
+				last = 0;
+				frame = requestAnimationFrame(tick);
+			}
+		}
+
+		// Carrying: the tile keeps the spot where the pointer took hold (a little inside its edge) under the pointer.
+		const grip: Point = { x: 0, y: 0 };
+		let carrying = false;
+		let homeTimer = 0;
+		let holdTimer = 0;
+
+		function pickUp(p: Point, nextRate: number) {
+			clearTimeout(homeTimer);
+			clearTimeout(holdTimer);
+			carrying = true;
+			returning = false;
+			root.setAttribute('data-carrying', '');
+			lens!.removeAttribute('data-near');
+			const insetX = tile.w / 2 - 10 / scale;
+			const insetY = tile.h / 2 - 10 / scale;
+			grip.x = Math.min(Math.max(pos.x - p.x, -insetX), insetX);
+			grip.y = Math.min(Math.max(pos.y - p.y, -insetY), insetY);
+			aim({ x: p.x + grip.x, y: p.y + grip.y }, nextRate);
+		}
+
+		function letGo(goHome: boolean) {
+			carrying = false;
+			root.removeAttribute('data-carrying');
+			clearTimeout(homeTimer);
+			if (!goHome) return;
+			homeTimer = window.setTimeout(() => {
+				returning = true;
+				aim(home, RATE.home);
+			}, HOME_DELAY);
+		}
+
+		function toDrawing(event: MouseEvent): Point {
+			const rect = root.getBoundingClientRect();
+			return { x: (event.clientX - rect.left - ox) / scale, y: (event.clientY - rect.top - oy) / scale };
+		}
+
+		// Mouse and pen: nothing moves until the pointer reaches the tile. Then the tile goes where the pointer goes,
+		// and glides back to its square soon after the pointer leaves the drawing.
+		let speed = 0;
+		let lastMove = { x: 0, y: 0, t: 0 };
+		let pointer: Point | null = null;
+
+		root.addEventListener('pointermove', (event) => {
+			const p = toDrawing(event);
+			if (event.pointerType === 'touch') {
+				if (carrying) aim({ x: p.x + grip.x, y: p.y + grip.y }, RATE.drag);
+				return;
+			}
+			const dt = Math.max(1, event.timeStamp - lastMove.t);
+			speed = 0.5 * speed + (0.5 * Math.hypot(event.clientX - lastMove.x, event.clientY - lastMove.y)) / dt;
+			lastMove = { x: event.clientX, y: event.clientY, t: event.timeStamp };
+			pointer = p;
+
+			if (carrying) {
+				aim({ x: p.x + grip.x, y: p.y + grip.y }, RATE.carry);
+				if (gap(p, target) > LET_GO) letGo(true);
+				return;
+			}
+			const distance = gap(p, pos);
+			lens.toggleAttribute('data-near', distance < NEAR && !returning);
+			clearTimeout(holdTimer);
+			if (distance > PICK_UP || returning) return;
+			if (speed <= PASSING) pickUp(p, RATE.carry);
+			// A quick pointer that stops on the tile still takes hold of it.
+			else
+				holdTimer = window.setTimeout(() => {
+					if (pointer && !carrying && !returning && gap(pointer, pos) <= PICK_UP) pickUp(pointer, RATE.carry);
+				}, 140);
+		});
+
+		root.addEventListener('pointerleave', (event) => {
+			if (event.pointerType === 'touch') return;
+			clearTimeout(holdTimer);
+			pointer = null;
+			lens.removeAttribute('data-near');
+			if (carrying) letGo(true);
+		});
+
+		// Touch: drag the tile itself, or tap the drawing to send it there. A scroll never fires a click, so swiping
+		// across the drawing leaves the tile alone.
+		let lastPointerType = 'mouse';
+		root.addEventListener('pointerdown', (event) => {
+			lastPointerType = event.pointerType;
+			if (event.pointerType === 'mouse' || !lens.contains(event.target as Node)) return;
+			lens.setPointerCapture(event.pointerId);
+			pickUp(toDrawing(event), RATE.drag);
+		});
+		const drop = () => {
+			if (lastPointerType !== 'mouse') letGo(false);
+		};
+		lens.addEventListener('pointerup', drop);
+		lens.addEventListener('pointercancel', drop);
+		root.addEventListener('click', (event) => {
+			if (lastPointerType === 'mouse' || lens.contains(event.target as Node)) return;
+			aim(toDrawing(event), RATE.tap);
+		});
+
+		new ResizeObserver(() => {
+			measure();
+			Object.assign(target, clampPoint(target));
+			Object.assign(pos, clampPoint(pos));
+			render();
+		}).observe(root);
+
+		const ready = () => {
+			measure();
+			try {
+				buildTables();
+			} catch {
+				// Canvas reads can fail (privacy settings); the tile still works without the readout.
+			}
+			Object.assign(target, clampPoint(target));
+			Object.assign(pos, target);
+			render();
+			labelW = label.offsetWidth; // now holding real percentages, so the edge check is exact
+			render();
+			root.setAttribute('data-ready', '');
+		};
+		if (fills.complete && fills.naturalWidth) ready();
+		else fills.addEventListener('load', ready, { once: true });
+	}
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-survey]')) initSurvey(root);
+</script>

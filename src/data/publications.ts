@@ -170,14 +170,14 @@ export const artifacts: Artifact[] = [
 	{
 		title: 'Hurricane-induced debris segmentation dataset using aerial imagery',
 		kind: 'Dataset',
-		host: 'NHERI DesignSafe · PRJ-6029',
+		host: 'NHERI DesignSafe, PRJ-6029',
 		note: 'First author',
 		links: [{ label: 'Dataset', href: 'https://doi.org/10.17603/ds2-jvps-2n95', kind: 'data' }],
 	},
 	{
 		title: 'CLIPSeg-debris code and model weights',
 		kind: 'Model',
-		host: 'GitHub · Hugging Face',
+		host: 'GitHub and Hugging Face',
 		note: 'Co-developed',
 		links: [
 			{ label: 'Code', href: 'https://github.com/Way-Yuhao/CLIPSeg-debris', kind: 'code' },
@@ -187,7 +187,7 @@ export const artifacts: Artifact[] = [
 	{
 		title: 'Electric power network recovery analysis for IN-CORE',
 		kind: 'Open source',
-		host: 'NCSA IN-CORE · pyincore-incubator',
+		host: 'NCSA IN-CORE, pyincore-incubator',
 		year: 2025,
 		note: 'Merged July 2025 (+1,417 lines)',
 		links: [{ label: 'Pull request', href: 'https://github.com/IN-CORE/pyincore-incubator/pull/21', kind: 'pr' }],
@@ -195,7 +195,7 @@ export const artifacts: Artifact[] = [
 	{
 		title: 'Evolving Threats: hurricane debris projection framework',
 		kind: 'Code & data',
-		host: 'GitHub · NHERI DesignSafe',
+		host: 'GitHub and NHERI DesignSafe',
 		year: 2026,
 		links: [
 			{ label: 'Code', href: 'https://github.com/Kooshan1/hurricane-debris-projection-framework-2026', kind: 'code' },
@@ -211,14 +211,14 @@ export const artifacts: Artifact[] = [
 	{
 		title: 'Galveston testbed: multi-hazard socio-physical datasets for coastal community resilience assessment',
 		kind: 'Dataset',
-		host: 'NHERI DesignSafe · PRJ-4527',
+		host: 'NHERI DesignSafe, PRJ-4527',
 		year: 2026,
 	},
 	{
 		id: 'power-network-data-2022',
 		title: 'Galveston Island electric power network data',
 		kind: 'Dataset',
-		host: 'NHERI DesignSafe · PRJ-3550',
+		host: 'NHERI DesignSafe, PRJ-3550',
 		year: 2022,
 		note: 'Third author',
 		links: [{ label: 'Dataset', href: 'https://doi.org/10.17603/ds2-j1fe-b390', kind: 'data' }],

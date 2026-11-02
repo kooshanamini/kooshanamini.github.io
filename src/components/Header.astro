@@ -7,20 +7,31 @@ const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.ur
 const isActive = (href: string) => path.startsWith(href);
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
-	<div class="container-site flex h-16 items-center justify-between gap-4">
-		<a href="/" class="flex items-center gap-2.5 rounded-lg font-semibold tracking-tight text-fg">
-			<span
-				aria-hidden="true"
-				class="grid size-8 place-items-center rounded-lg bg-accent text-[0.8125rem] font-bold tracking-normal text-accent-fg"
-				>KA</span
-			>
-			<span>{site.name}</span>
+<header
+	class="sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color] duration-200 data-[scrolled]:border-line data-[scrolled]:bg-bg/90 data-[scrolled]:backdrop-blur-md"
+	data-site-header
+>
+	<div class="container-site flex h-16 items-center justify-between gap-6">
+		<!-- Home: the favicon's KA monogram inside the corner brackets of the hero's survey tile. -->
+		<a href="/" class="group grid size-10 place-items-center text-fg" aria-label={`${site.name}, home`}>
+			<svg viewBox="0 0 40 40" class="size-10" fill="none" stroke="currentColor" aria-hidden="true">
+				<path
+					d="M1 8V1h7M32 1h7v7M39 32v7h-7M8 39H1v-7"
+					stroke-width="1.5"
+					class="transition-colors group-hover:text-accent"
+				/>
+				<path
+					d="M10.5 12.6v14.8M17 12.6 10.5 20M13.4 16.7l4.1 10.7M21.3 27.4l4.1-14.8 4.1 14.8M22.6 22.5h5.6"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
 		</a>
 
-		<div class="flex items-center gap-1">
+		<div class="flex items-center gap-2">
 			<nav aria-label="Main" class="hidden md:block">
-				<ul class="flex items-center gap-1">
+				<ul class="flex items-center gap-7">
 					{
 						site.nav.map((item) => (
 							<li>
@@ -28,8 +39,8 @@ const isActive = (href: string) => path.startsWith(href);
 									href={item.href}
 									aria-current={isActive(item.href) ? 'page' : undefined}
 									class:list={[
-										'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-										isActive(item.href) ? 'bg-surface text-fg' : 'text-muted hover:text-fg',
+										'text-[0.9375rem] text-fg decoration-accent decoration-2 underline-offset-[6px] hover:underline',
+										isActive(item.href) && 'underline',
 									]}
 								>
 									{item.label}
@@ -39,11 +50,11 @@ const isActive = (href: string) => path.startsWith(href);
 					}
 				</ul>
 			</nav>
-			<span aria-hidden="true" class="mx-1 hidden h-5 w-px bg-line md:block"></span>
+			<span aria-hidden="true" class="mx-3 hidden h-5 w-px bg-line md:block"></span>
 			<ThemeToggle />
 			<button
 				type="button"
-				class="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-surface hover:text-fg md:hidden"
+				class="grid size-10 place-items-center text-fg md:hidden"
 				aria-controls="mobile-nav"
 				aria-expanded="false"
 				aria-label="Menu"
@@ -55,8 +66,8 @@ const isActive = (href: string) => path.startsWith(href);
 		</div>
 	</div>
 
-	<nav id="mobile-nav" aria-label="Main" class="hidden border-t border-line md:hidden" data-menu>
-		<ul class="container-site flex flex-col gap-1 py-3">
+	<nav id="mobile-nav" aria-label="Main" class="hidden border-t border-line bg-bg md:hidden" data-menu>
+		<ul class="container-site flex flex-col py-3">
 			{
 				site.nav.map((item) => (
 					<li>
@@ -64,8 +75,8 @@ const isActive = (href: string) => path.startsWith(href);
 							href={item.href}
 							aria-current={isActive(item.href) ? 'page' : undefined}
 							class:list={[
-								'block rounded-lg px-3 py-2.5 text-base font-medium',
-								isActive(item.href) ? 'bg-surface text-fg' : 'text-muted hover:text-fg',
+								'block py-3 font-display text-2xl text-fg',
+								isActive(item.href) && 'underline decoration-accent decoration-2 underline-offset-[6px]',
 							]}
 						>
 							{item.label}
@@ -78,12 +89,20 @@ const isActive = (href: string) => path.startsWith(href);
 </header>
 
 <script>
+	const header = document.querySelector<HTMLElement>('[data-site-header]');
 	const button = document.querySelector<HTMLButtonElement>('[data-menu-button]');
 	const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+	// The header is transparent at the top of the page and gains a background once the page scrolls.
+	const onScroll = () => header?.toggleAttribute('data-scrolled', window.scrollY > 8);
+	onScroll();
+	window.addEventListener('scroll', onScroll, { passive: true });
+
 	button?.addEventListener('click', () => {
 		const open = button.getAttribute('aria-expanded') !== 'true';
 		button.setAttribute('aria-expanded', String(open));
 		menu?.classList.toggle('hidden', !open);
+		header?.toggleAttribute('data-scrolled', open || window.scrollY > 8);
 		button.querySelector('[data-menu-open]')?.classList.toggle('hidden', open);
 		button.querySelector('[data-menu-close]')?.classList.toggle('hidden', !open);
 	});

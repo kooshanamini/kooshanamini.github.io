@@ -7,7 +7,7 @@ const projects = defineCollection({
 	schema: ({ image }) =>
 		z.object({
 			title: z.string(),
-			/** Short label above the title, e.g. "CLIPSeg-debris · CACAIE 2025". */
+			/** Short label above the title, e.g. "CLIPSeg-debris, CACAIE 2025". */
 			name: z.string(),
 			/** One or two sentences for cards, the page lead, and the meta description. */
 			summary: z.string(),

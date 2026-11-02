@@ -14,46 +14,34 @@ interface Props {
 const {
 	project,
 	headingLevel: Heading = 'h3',
-	sizes = '(min-width: 1152px) 544px, (min-width: 640px) 50vw, 100vw',
+	sizes = '(min-width: 1216px) 560px, (min-width: 640px) 50vw, 100vw',
 	eager = false,
 } = Astro.props;
-const { title, name, summary, cover, coverAlt, coverFit, motif, tags } = project.data;
-const zoom = 'transition-transform duration-500 ease-out group-hover:scale-[1.025]';
+const { title, name, summary, cover, coverFit, motif } = project.data;
 ---
 
-<article
-	class="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-bg transition-[border-color,box-shadow] duration-200 hover:border-line-strong hover:shadow-[0_14px_36px_-18px_rgb(14_22_38/0.28)] has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-accent"
->
-	<div class="relative aspect-[2/1] overflow-hidden border-b border-line bg-surface">
+<article class="group relative">
+	<div class="bg-figure">
 		{
 			cover ? (
 				<Image
 					src={cover}
-					alt={coverAlt}
-					widths={[480, 720, 1088]}
+					alt=""
+					widths={[480, 720, 1120]}
 					sizes={sizes}
 					loading={eager ? 'eager' : 'lazy'}
-					class:list={['size-full', zoom, coverFit === 'contain' ? 'bg-figure object-contain p-4' : 'object-cover']}
+					class:list={['aspect-[16/10] w-full', coverFit === 'contain' ? 'object-contain p-5 sm:p-7' : 'object-cover']}
 				/>
 			) : (
-				<ProjectCover motif={motif} class:list={['size-full', zoom]} />
+				<ProjectCover motif={motif} class="aspect-[16/10] w-full" />
 			)
 		}
 	</div>
-	<div class="flex flex-1 flex-col p-5 sm:p-6">
-		<p class="text-xs font-medium text-subtle">{name}</p>
-		<Heading class="mt-1.5 text-lg font-semibold leading-snug tracking-tight text-fg">
-			<a href={`/projects/${project.id}/`} class="outline-none after:absolute after:inset-0">{title}</a>
-		</Heading>
-		<p class="mt-2 text-sm leading-relaxed text-muted">{summary}</p>
-		{
-			tags.length > 0 && (
-				<ul class="mt-auto flex flex-wrap gap-1.5 pt-5" aria-label="Topics">
-					{tags.map((tag) => (
-						<li class="chip">{tag}</li>
-					))}
-				</ul>
-			)
-		}
-	</div>
+	<p class="meta mt-5">{name}</p>
+	<Heading class="mt-2 text-[1.5rem] leading-[1.2] sm:text-[1.625rem]">
+		<a href={`/projects/${project.id}/`} class="outline-none after:absolute after:inset-0 group-hover:text-accent">
+			{title}
+		</a>
+	</Heading>
+	<p class="mt-3 leading-relaxed">{summary}</p>
 </article>

@@ -12,8 +12,8 @@ function splitLead(text: string): [string | null, string] {
 	return i > 0 && i < 70 ? [text.slice(0, i), text.slice(i + 2)] : [null, text];
 }
 
-const sectionClass = 'grid gap-5 py-10 md:grid-cols-[11rem_minmax(0,1fr)] md:gap-10';
-const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle md:pt-1';
+const sectionClass = 'grid gap-6 py-14 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-12';
+const headingClass = 'text-[1.75rem] leading-tight';
 ---
 
 <BaseLayout
@@ -21,7 +21,6 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 	description="Curriculum vitae of Kooshan Amini: education, research and industry experience, skills, honors, and service."
 >
 	<PageHeader
-		eyebrow="Curriculum vitae"
 		title="CV"
 		lead="Education, experience, and skills at a glance. The PDF is a two-page version for applications."
 	>
@@ -35,10 +34,10 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 				<Icon name="arrow-right" />
 			</a>
 		</div>
-		<p class="mt-3 text-xs text-subtle">PDF updated {site.cv.updated}</p>
+		<p class="meta mt-4">PDF updated {site.cv.updated}</p>
 	</PageHeader>
 
-	<div class="container-site">
+	<div class="container-site pb-24">
 		<div class="divide-y divide-line border-y border-line">
 			<section class={sectionClass} aria-labelledby="education">
 				<h2 id="education" class={headingClass}>Education</h2>
@@ -47,30 +46,23 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 						education.map((entry) => (
 							<div>
 								<div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-									<h3 class="font-semibold text-fg">
-										{entry.title}
-										<span class="font-normal text-muted"> · {entry.org}</span>
-									</h3>
-									<p class="shrink-0 text-sm text-subtle tabular-nums">{entry.dates}</p>
+									<h3 class="text-[1.25rem] leading-snug">{entry.title}</h3>
+									<p class="meta shrink-0 tabular-nums">{entry.dates}</p>
 								</div>
-								{entry.bullets && (
-									<p class="mt-1 text-sm leading-relaxed text-muted">
-										{entry.bullets.map((bullet, i) => (
-											<>
-												{i > 0 && ' · '}
-												{parseLinks(bullet).map((part) =>
-													typeof part === 'string' ? (
-														part
-													) : (
-														<a href={part.href} class="link">
-															{part.text}
-														</a>
-													),
-												)}
-											</>
-										))}
+								<p class="mt-0.5 text-muted">{entry.org}</p>
+								{entry.bullets?.map((bullet) => (
+									<p class="mt-1 text-[0.9375rem] leading-relaxed text-muted">
+										{parseLinks(bullet).map((part) =>
+											typeof part === 'string' ? (
+												part
+											) : (
+												<a href={part.href} class="link">
+													{part.text}
+												</a>
+											),
+										)}
 									</p>
-								)}
+								))}
 							</div>
 						))
 					}
@@ -84,15 +76,13 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 						experience.map((entry) => (
 							<article>
 								<div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-									<h3 class="font-semibold text-fg">
-										{entry.title}
-										<span class="font-normal text-muted"> · {entry.org}</span>
-									</h3>
-									<p class="shrink-0 text-sm text-subtle tabular-nums">{entry.dates}</p>
+									<h3 class="text-[1.25rem] leading-snug">{entry.title}</h3>
+									<p class="meta shrink-0 tabular-nums">{entry.dates}</p>
 								</div>
-								{entry.summary && <p class="mt-1.5 text-sm leading-relaxed text-muted">{entry.summary}</p>}
+								<p class="mt-0.5 text-muted">{entry.org}</p>
+								{entry.summary && <p class="mt-2 text-[0.9375rem] leading-relaxed text-muted">{entry.summary}</p>}
 								{entry.bullets && (
-									<ul class="mt-4 list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-body marker:text-line-strong">
+									<ul class="mt-4 list-disc space-y-2.5 pl-5 leading-relaxed marker:text-accent">
 										{entry.bullets.map((bullet) => {
 											const [lead, rest] = splitLead(bullet);
 											return (
@@ -116,13 +106,9 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 					{
 						skills.map((group) => (
 							<div>
-								<dt class="text-sm font-semibold text-fg">{group.group}</dt>
+								<dt class="font-medium">{group.group}</dt>
 								<dd class="mt-2">
-									<ul class="flex flex-wrap gap-1.5">
-										{group.items.map((item) => (
-											<li class="chip">{item}</li>
-										))}
-									</ul>
+									<p class="leading-relaxed">{group.items.join(', ')}</p>
 								</dd>
 							</div>
 						))
@@ -132,11 +118,11 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 
 			<section class={sectionClass} aria-labelledby="honors">
 				<h2 id="honors" class={headingClass}>Honors</h2>
-				<ul class="space-y-3 text-sm leading-relaxed text-body">
+				<ul class="space-y-3 leading-relaxed">
 					{
 						honors.map((item) => (
 							<li class="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3">
-								<span class="text-subtle tabular-nums">{item.year}</span>
+								<span class="meta tabular-nums pt-0.5">{item.year}</span>
 								<span>{item.text}</span>
 							</li>
 						))
@@ -146,18 +132,18 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 
 			<section class={sectionClass} aria-labelledby="service">
 				<h2 id="service" class={headingClass}>Service</h2>
-				<ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-body marker:text-line-strong">
+				<ul class="list-disc space-y-2 pl-5 leading-relaxed marker:text-accent">
 					{service.map((item) => <li>{item}</li>)}
 				</ul>
 			</section>
 
 			<section class={sectionClass} aria-labelledby="teaching">
 				<h2 id="teaching" class={headingClass}>Teaching & mentoring</h2>
-				<ul class="space-y-3 text-sm leading-relaxed text-body">
+				<ul class="space-y-3 leading-relaxed">
 					{
 						teaching.map((item) => (
 							<li class="grid gap-1 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
-								<span class="text-subtle tabular-nums">{item.dates}</span>
+								<span class="meta tabular-nums pt-0.5">{item.dates}</span>
 								<span>{item.text}</span>
 							</li>
 						))
@@ -167,11 +153,11 @@ const headingClass = 'text-xs font-semibold uppercase tracking-wider text-subtle
 
 			<section class={sectionClass} aria-labelledby="leadership">
 				<h2 id="leadership" class={headingClass}>Leadership</h2>
-				<ul class="space-y-3 text-sm leading-relaxed text-body">
+				<ul class="space-y-3 leading-relaxed">
 					{
 						leadership.map((item) => (
 							<li class="grid gap-1 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
-								<span class="text-subtle tabular-nums">{item.dates}</span>
+								<span class="meta tabular-nums pt-0.5">{item.dates}</span>
 								<span>{item.text}</span>
 							</li>
 						))

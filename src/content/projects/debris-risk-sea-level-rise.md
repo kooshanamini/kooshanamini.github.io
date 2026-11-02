@@ -1,6 +1,6 @@
 ---
 title: Climate-driven debris risk with monotonic neural networks
-name: Evolving Threats · ASCE Natural Hazards Review
+name: Evolving Threats, ASCE Natural Hazards Review
 summary: A physics-constrained neural network for hurricane debris, coupled with sea-level-rise and land-cover scenarios and Monte Carlo network analysis, projects debris up 11–14% and emergency-access loss up 9–17% by 2040.
 order: 7
 role: First author and sole developer of the code

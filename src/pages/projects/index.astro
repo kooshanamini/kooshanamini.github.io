@@ -12,19 +12,18 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 	description="Projects by Kooshan Amini in computer vision, vision-language models, ML systems, and probabilistic risk modeling, with the problem, approach, results, and role for each."
 >
 	<PageHeader
-		eyebrow="Projects"
 		title="Selected projects"
 		lead="Computer vision, vision-language models, ML systems, and probabilistic modeling, from peer-reviewed research to production pipelines. Each write-up covers the problem, the approach, the results, and my role."
 	/>
-	<section class="container-site">
+	<section class="container-site pb-24">
 		<h2 class="sr-only">All projects</h2>
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="grid gap-x-12 gap-y-20 sm:grid-cols-2">
 			{
 				projects.map((project, i) => (
 					<ProjectCard
 						project={project}
 						eager={i < 3}
-						sizes="(min-width: 1152px) 352px, (min-width: 1024px) 31vw, (min-width: 640px) 50vw, 100vw"
+						sizes="(min-width: 1216px) 560px, (min-width: 640px) 50vw, 100vw"
 					/>
 				))
 			}

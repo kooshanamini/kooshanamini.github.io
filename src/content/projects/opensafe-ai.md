@@ -1,6 +1,6 @@
 ---
 title: Schema-first architecture for multimodal flood awareness
-name: OpenSafe.AI · NSF ReDDDoT
+name: OpenSafe.AI, NSF ReDDDoT
 summary: Coordinating a multi-team NSF project and designing its architecture — versioned JSON-Schema interfaces and MCP modules — plus Bayesian fusion of crowd reports, cameras, and gauges that flags flooding a median 27 hours early.
 order: 4
 featured: true

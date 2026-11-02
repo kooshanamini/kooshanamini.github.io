@@ -1,6 +1,6 @@
 ---
 title: Real-time flood mapping with a 71% smaller scenario library
-name: FASII-RT · Harris County Flood Control District
+name: FASII-RT, Harris County Flood Control District
 summary: Compressed a 99-map library of 2D hydraulic scenarios to 29 representative maps with PCA and k-medoids, sped up validation 6–7× on GPUs, and modeled flood-driven road closures and hospital access.
 order: 5
 role: Rice technical lead for impact analysis; first author of three technical reports

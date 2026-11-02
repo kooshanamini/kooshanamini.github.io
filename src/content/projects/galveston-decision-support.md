@@ -1,20 +1,20 @@
 ---
 title: Decision support for coastal community resilience
-name: Galveston testbed · IJDRR 2026
-summary: Integrated a multi-institution hazard → damage → recovery → economics model chain with multi-objective optimization; a $200M mitigation plan cuts expected losses by $192M and speeds recovery by 15 days.
+name: Galveston testbed, IJDRR 2026
+summary: Integrated a multi-institution hazard → damage → recovery → economics model chain with multi-objective optimization; an optimized mitigation plan displaces about 1,500 fewer people and speeds recovery by 15 days.
 order: 6
 period: 2023 – 2026
 role: First of 16 authors; Rice student lead of the Galveston testbed (2023–2025)
-context: NIST Center of Excellence for Risk-Based Community Resilience Planning · IJDRR, 2026
+context: NIST Center of Excellence for Risk-Based Community Resilience Planning; IJDRR, 2026
 tags: [Simulation, Optimization, Risk modeling]
 stack: [Python, pyincore (IN-CORE), NetworkX, joblib, Monte Carlo simulation, GeoPandas]
 metrics:
-  - value: $192M
-    label: lower expected losses from a $200M mitigation plan
   - value: ~1,500
     label: fewer people displaced
   - value: 15 days
     label: faster community recovery
+  - value: '38'
+    label: researchers from about 16 institutions, coordinated as Rice student lead
 links:
   - label: Paper (open access)
     href: https://doi.org/10.1016/j.ijdrr.2026.106136
@@ -54,7 +54,8 @@ Communities facing hurricanes have to decide where to spend limited mitigation b
 ## Results
 
 - Baseline scenario: $8.46B in losses, 36,603 people displaced, and a 180-day recovery.
-- A $200M mitigation plan cuts expected losses by $192M, displaces about 1,500 fewer people, and shortens recovery by 15 days.
+- An optimized mitigation plan displaces about 1,500 fewer people and shortens average recovery by 15 days.
+- Plans that put losses first retrofit high-value coastal property, while plans that put people first target dense neighborhoods, so protecting property and protecting residents pull in different directions.
 - The most efficient plan is not the most equitable one, and the framework makes that trade-off explicit.
 
 ## My role

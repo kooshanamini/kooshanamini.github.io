@@ -4,7 +4,7 @@ import Icon from './Icon.astro';
 
 <button
 	type="button"
-	class="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-surface hover:text-fg"
+	class="grid size-10 place-items-center text-fg transition-colors hover:text-accent"
 	aria-label="Dark mode"
 	aria-pressed="false"
 	title="Toggle dark mode"
@@ -20,6 +20,7 @@ import Icon from './Icon.astro';
 		sync();
 		button.addEventListener('click', () => {
 			const dark = document.documentElement.classList.toggle('dark');
+			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0e1820' : '#eef3f5');
 			try {
 				localStorage.setItem('theme', dark ? 'dark' : 'light');
 			} catch {

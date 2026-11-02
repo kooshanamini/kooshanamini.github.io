@@ -1,11 +1,11 @@
 ---
 title: Open-source power-network recovery for IN-CORE
-name: IN-CORE · Open source
+name: IN-CORE, open source
 summary: Contributed an electric power network recovery analysis — Monte Carlo damage, crew-constrained repair scheduling, and importance-ordered restoration — to NCSA's open-source IN-CORE platform, merged after code review and CI.
 order: 8
 period: 2024 – 2025
 role: Contributor, selected for the 1st IN-CORE Contributor Cohort (NCSA & NIST Center of Excellence)
-context: Open source · merged July 2025
+context: Open source, merged July 2025
 tags: [Open source, Graph algorithms, Simulation]
 stack: [Python, NetworkX, NumPy, concurrent.futures, black, CI]
 metrics:

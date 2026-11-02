@@ -1,63 +1,54 @@
 ---
-import { getImage } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import headshotPortrait from '../assets/headshot-portrait.jpg';
-import headshotSquare from '../assets/headshot-square.jpg';
 import EmailLink from '../components/EmailLink.astro';
-import Icon from '../components/Icon.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import ProjectCover from '../components/ProjectCover.astro';
 import PublicationItem from '../components/PublicationItem.astro';
-import SectionHeader from '../components/SectionHeader.astro';
+import SurveyPlate from '../components/SurveyPlate.astro';
+import { citationsFor, scholar } from '../data/citations';
 import { news } from '../data/news';
 import { publications } from '../data/publications';
 import { site } from '../data/site';
 import { conferenceTalks, invitedTalks, workshops } from '../data/talks';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatMonth } from '../lib/format';
-import { citationsFor, scholar } from '../data/citations';
 
 const featured = (await getCollection('projects'))
 	.filter((project) => project.data.featured)
 	.sort((a, b) => a.data.order - b.data.order);
 const selected = publications.filter((pub) => pub.selected).slice(0, 4);
 
-// Art-directed headshot: a round avatar on small screens, a 4:5 portrait beside the text on desktop.
-const [portrait1x, portrait2x, avatar1x, avatar2x] = await Promise.all([
-	getImage({ src: headshotPortrait, width: 320, format: 'webp' }),
-	getImage({ src: headshotPortrait, width: 640, format: 'webp' }),
-	getImage({ src: headshotSquare, width: 112, format: 'webp' }),
-	getImage({ src: headshotSquare, width: 224, format: 'webp' }),
+const [portrait1x, portrait2x] = await Promise.all([
+	getImage({ src: headshotPortrait, width: 420, format: 'webp' }),
+	getImage({ src: headshotPortrait, width: 840, format: 'webp' }),
 ]);
 
-// "At a glance" facts.
 const talkCount =
 	invitedTalks.length +
 	workshops.length +
 	conferenceTalks.filter((talk) => !talk.note?.startsWith('Presented by')).length;
-const highlights = [
+const facts = [
 	{ value: '5', label: 'peer-reviewed journal papers, 4 as first author', href: '/publications/' },
 	{ value: scholar.total.toLocaleString('en-US'), label: 'citations on Google Scholar', href: '/publications/' },
-	{ value: String(talkCount), label: 'invited talks, workshops, and conference presentations', href: '/talks/' },
-	{ value: '6', label: 'sponsored research projects with NSF, NASA, NIST, and Harris County', href: '/projects/' },
+	{ value: String(talkCount), label: 'invited talks, workshops, and conference talks', href: '/talks/' },
+	{ value: '6', label: 'sponsored research projects', href: '/projects/' },
 ];
 
-const focus = [
+const themes = [
 	{
-		icon: 'scan-eye',
-		title: 'Computer vision & foundation models',
-		text: 'Adapting vision-language and depth foundation models to scarce, shifting real-world imagery: segmentation that transfers to unseen events, monocular 3D estimation, and data-efficient fine-tuning.',
+		title: 'Seeing damage in new imagery',
+		text: 'Adapting vision-language and depth foundation models to scarce, shifting aerial and satellite imagery: segmentation that transfers to storms a model has never seen, and 3D estimates from a single image.',
 	},
 	{
-		icon: 'cpu',
-		title: 'ML systems & VLMs at scale',
-		text: 'Config-driven pipelines over terabytes of imagery, open-model VLM inference with vLLM on multiple GPUs, and benchmarks designed so the results can be trusted.',
+		title: 'Systems that scale',
+		text: 'Config-driven pipelines over terabytes of imagery, open vision-language models served on GPUs, and benchmarks designed so the results can be trusted.',
 	},
 	{
-		icon: 'chart-spline',
-		title: 'Probabilistic & physics-informed modeling',
-		text: 'Bayesian data fusion, Monte Carlo simulation, random fields, and monotonic neural networks that turn model outputs into risk estimates and decisions.',
+		title: 'From predictions to decisions',
+		text: 'Bayesian data fusion, Monte Carlo simulation, and physics-constrained neural networks that turn model outputs into risk estimates people can act on.',
 	},
-] as const;
+];
 
 const linkedin = site.social.find((item) => item.icon === 'linkedin');
 
@@ -85,26 +76,73 @@ const jsonLd = {
 	],
 	sameAs: site.social.map((item) => item.href),
 };
+
+const heroAlt =
+	'Engraved aerial view of a barrier-island neighborhood after a hurricane. A movable square survey tile shows the drawing as a debris map: orange for dense debris, yellow for scattered debris, and blue for clear ground.';
 ---
 
 <BaseLayout type="profile" jsonLd={jsonLd}>
-	<!-- Hero -->
-	<section class="relative isolate">
-		<div aria-hidden="true" class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
-		<div class="container-site grid items-center gap-8 pb-16 pt-12 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16 lg:pb-24 lg:pt-20">
-			<div class="max-w-2xl">
-				<p class="eyebrow">{site.role} · {site.affiliation}</p>
-				<h1 class="mt-3 text-4xl font-semibold tracking-tight text-fg sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
-					{site.name}
+	<!-- Hero: the engraved coastline. Visitors move the survey tile to see the drawing's debris map. -->
+	<section class="relative isolate -mt-16 overflow-hidden bg-bg">
+		<div
+			class="container-site pointer-events-none relative z-10 flex flex-col justify-center pb-10 pt-28 lg:min-h-[100svh] lg:pb-20 lg:pt-24"
+		>
+			<div class="pointer-events-auto max-w-[35rem]">
+				<h1
+					class="rise font-display text-[clamp(3.6rem,9vw,7.5rem)] font-normal leading-[0.9] tracking-[-0.035em]"
+					style="--i: 0"
+				>
+					Kooshan<br />Amini
 				</h1>
-				<p class="mt-5 text-lg leading-relaxed text-body sm:text-xl sm:leading-relaxed">{site.tagline}</p>
-				<p class="mt-4 leading-relaxed text-muted">
+				<p class="rise mt-8 text-[1.3125rem] leading-[1.5] text-fg sm:text-[1.4375rem]" style="--i: 1">
+					{site.tagline}
+				</p>
+				<p class="rise mt-5 text-muted" style="--i: 2">
+					Ph.D. candidate in Engineering at Rice University, open to Summer 2027 internships.
+				</p>
+				<div class="rise mt-10 flex flex-wrap items-center gap-4" style="--i: 3">
+					<a href="#work" class="btn btn-primary">See my work</a>
+					<a href={site.cv.href} class="btn btn-secondary">Download CV</a>
+				</div>
+				<p class="rise mt-10 flex items-center gap-3 text-[0.9375rem] text-muted" style="--i: 4">
+					<svg class="size-4 shrink-0 text-fg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+						<path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" />
+					</svg>
+					<span>
+						<span class="hint-fine">Point at the tile, then move it</span><span class="hint-touch">Drag the tile</span> across
+						the drawing to reveal its <a href="/projects/clipseg-debris/" class="link font-normal">debris map</a>.
+					</span>
+				</p>
+			</div>
+		</div>
+		<SurveyPlate />
+		<p class="sr-only">{heroAlt}</p>
+	</section>
+
+	<!-- About -->
+	<section class="container-site grid gap-12 pb-24 pt-12 sm:py-32 lg:grid-cols-12 lg:gap-16" aria-labelledby="about">
+		<div class="lg:col-span-4">
+			<img
+				src={portrait1x.src}
+				srcset={`${portrait1x.src} 1x, ${portrait2x.src} 2x`}
+				alt="Portrait of Kooshan Amini"
+				width="420"
+				height="525"
+				loading="lazy"
+				decoding="async"
+				class="portrait aspect-[4/5] w-full max-w-[22rem] object-cover"
+			/>
+		</div>
+		<div class="lg:col-span-8">
+			<h2 id="about" class="text-[2.5rem] leading-tight sm:text-[3rem]">About</h2>
+			<div class="mt-8 max-w-[42rem] space-y-5 text-[1.125rem] leading-[1.7]">
+				<p>
 					At Rice, I’m advised by <a href={site.advisors.padgett.href} class="link">{site.advisors.padgett.name}</a>,
 					with research co-advised by <a href={site.advisors.chen.href} class="link">{site.advisors.chen.name}</a
 					> in Computer Science. I’m drawn to problems where data is messy, labels are scarce, and decisions can’t wait,
 					like mapping damage in the first days after a hurricane.
 				</p>
-				<p class="mt-3 leading-relaxed text-muted">
+				<p>
 					Recent work includes <a href="/projects/clipseg-debris/" class="link">CLIPSeg-debris</a>, a vision-language
 					model that segments debris in storms it has never seen; <a href="/projects/debrisheightnet/" class="link"
 						>DebrisHeightNet</a
@@ -117,196 +155,196 @@ const jsonLd = {
 					>, led <a href="/talks/" class="link">hands-on workshops</a> on AI for disaster imagery, and spent summer 2025
 					at Arup as a Risk & Resilience Engineering Intern.
 				</p>
-
-				<p class="mt-6 inline-flex items-center gap-2.5 rounded-full border border-line bg-bg px-3.5 py-1.5 text-sm">
-					<span class="relative flex size-2" aria-hidden="true">
-						<span class="absolute inline-flex size-full rounded-full bg-success opacity-60 motion-safe:animate-ping"></span>
-						<span class="relative inline-flex size-2 rounded-full bg-success"></span>
-					</span>
-					<span class="font-medium text-fg">{site.availability}</span>
-				</p>
-
-				<div class="mt-8 flex flex-wrap gap-3">
-					<a href="/projects/" class="btn btn-primary">
-						View projects
-						<Icon name="arrow-right" />
-					</a>
-					<a href={site.cv.href} class="btn btn-secondary">
-						<Icon name="download" />
-						Download CV
-					</a>
-					<EmailLink variant="secondary" label="Email" />
-				</div>
-
-				<ul class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm" aria-label="Profiles">
-					{
-						site.social.map((item) => (
-							<li>
-								<a
-									href={item.href}
-									class="inline-flex items-center gap-2 font-medium text-muted transition-colors hover:text-fg"
-								>
-									<Icon name={item.icon} class="size-[18px]" />
-									{item.label}
-								</a>
-							</li>
-						))
-					}
-				</ul>
 			</div>
 
-			<picture class="order-first block lg:order-none">
-				<source media="(min-width: 1024px)" srcset={`${portrait1x.src} 1x, ${portrait2x.src} 2x`} width="320" height="400" />
-				<img
-					src={avatar1x.src}
-					srcset={`${avatar1x.src} 1x, ${avatar2x.src} 2x`}
-					alt="Portrait of Kooshan Amini"
-					width="112"
-					height="112"
-					loading="eager"
-					fetchpriority="high"
-					decoding="async"
-					class="size-24 rounded-full object-cover ring-1 ring-line sm:size-28 lg:h-[400px] lg:w-[320px] lg:rounded-[1.75rem] lg:shadow-[0_28px_64px_-32px_rgb(14_22_38/0.5)]"
-				/>
-			</picture>
+			<dl class="mt-14 grid max-w-[46rem] grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-4">
+				{
+					facts.map((fact) => (
+						<div class="flex flex-col-reverse justify-end gap-2">
+							<dt class="meta">
+								<a href={fact.href} class="hover:text-fg">
+									{fact.label}
+								</a>
+							</dt>
+							<dd class="font-display text-[2.75rem] leading-none tracking-[-0.02em] tabular-nums">{fact.value}</dd>
+						</div>
+					))
+				}
+			</dl>
+
+			<ul class="mt-14 flex flex-wrap gap-x-8 gap-y-3" aria-label="Elsewhere">
+				<li><EmailLink variant="text" /></li>
+				{
+					site.social.map((item) => (
+						<li>
+							<a href={item.href} class="link">
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
 		</div>
 	</section>
 
-	<!-- At a glance -->
-	<section aria-label="At a glance" class="border-y border-line bg-surface">
-		<ul
-			class:list={[
-				'container-site grid grid-cols-2 gap-x-6 gap-y-7 py-8 sm:py-10',
-				highlights.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
-			]}
-		>
+	<!-- Research -->
+	<section class="bg-surface py-24 sm:py-32" aria-labelledby="research">
+		<div class="container-site grid gap-12 lg:grid-cols-12 lg:gap-16">
+			<h2 id="research" class="text-[2.5rem] leading-tight sm:text-[3rem] lg:col-span-4">Research</h2>
+			<div class="lg:col-span-8">
+				<p class="max-w-[44rem] font-display text-[1.5rem] leading-[1.45] sm:text-[1.75rem]">
+					Methods first, applied where decisions are hard. Hurricanes and floods are where I use them: high stakes,
+					scarce labels, and data that shifts from one event to the next.
+				</p>
+				<div class="mt-14 grid gap-10 md:grid-cols-3">
+					{
+						themes.map((theme) => (
+							<div>
+								<h3 class="text-[1.3125rem] leading-snug">{theme.title}</h3>
+								<p class="mt-3 leading-relaxed">{theme.text}</p>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Selected work -->
+	<section id="work" class="container-site scroll-mt-20 py-24 sm:py-32" aria-labelledby="work-title">
+		<div class="flex flex-wrap items-baseline justify-between gap-4">
+			<h2 id="work-title" class="text-[2.5rem] leading-tight sm:text-[3rem]">Selected work</h2>
+			<a href="/projects/" class="link">All projects</a>
+		</div>
+		<div class="mt-14 space-y-20 sm:space-y-28">
 			{
-				highlights.map((item) => (
-					<li>
-						<a
-							href={item.href}
-							class="group flex h-full flex-col gap-1 border-l-2 border-line pl-4 transition-colors hover:border-accent"
-						>
-							<span class="text-2xl font-semibold tracking-tight text-fg tabular-nums sm:text-3xl">{item.value}</span>
-							<span class="text-sm leading-snug text-muted transition-colors group-hover:text-fg">{item.label}</span>
-						</a>
-					</li>
+				featured.map((project, i) => (
+					<article class="grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
+						<div class:list={['bg-figure lg:col-span-7', i % 2 === 1 && 'lg:order-2']}>
+							{project.data.cover ? (
+								<Image
+									src={project.data.cover}
+									alt=""
+									widths={[640, 960, 1280]}
+									sizes="(min-width: 1024px) 56vw, 100vw"
+									class:list={[
+										'aspect-[16/10] w-full',
+										project.data.coverFit === 'contain' ? 'object-contain p-6 sm:p-8' : 'object-cover',
+									]}
+								/>
+							) : (
+								<ProjectCover motif={project.data.motif} class="aspect-[16/10] w-full" />
+							)}
+						</div>
+						<div class="lg:col-span-5">
+							<p class="meta">{project.data.name}</p>
+							<h3 class="mt-3 text-[1.875rem] leading-[1.15] sm:text-[2.125rem]">{project.data.title}</h3>
+							<p class="mt-5 leading-relaxed">{project.data.summary}</p>
+							<a href={`/projects/${project.id}/`} class="link mt-7 inline-block">
+								Read the case study<span class="sr-only">: {project.data.name}</span>
+							</a>
+						</div>
+					</article>
 				))
 			}
-		</ul>
-	</section>
-
-	<!-- Focus areas -->
-	<section class="container-site py-20 sm:py-24" aria-labelledby="focus">
-		<SectionHeader
-			id="focus"
-			eyebrow="What I work on"
-			title="Methods first, applied where decisions are hard"
-			description="Hurricanes and floods are where I apply these methods: high stakes, scarce labels, and data that shifts from one event to the next."
-		/>
-		<div class="mt-10 grid gap-5 md:grid-cols-3">
-			{
-				focus.map((item) => (
-					<div class="rounded-2xl border border-line bg-bg p-6">
-						<span class="grid size-10 place-items-center rounded-xl bg-accent-soft text-accent">
-							<Icon name={item.icon} class="size-5" />
-						</span>
-						<h3 class="mt-5 font-semibold tracking-tight text-fg">{item.title}</h3>
-						<p class="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
-					</div>
-				))
-			}
-		</div>
-	</section>
-
-	<!-- Selected projects -->
-	<section class="container-site" aria-labelledby="work">
-		<div class="flex flex-wrap items-end justify-between gap-4">
-			<SectionHeader id="work" eyebrow="Selected work" title="Projects" />
-			<a href="/projects/" class="link inline-flex items-center gap-1.5 text-sm">
-				All projects <Icon name="arrow-right" class="size-3.5" />
-			</a>
-		</div>
-		<div class="mt-8 grid gap-6 sm:grid-cols-2">
-			{featured.map((project) => <ProjectCard project={project} />)}
 		</div>
 	</section>
 
 	<!-- Publications and news -->
-	<section class="container-site grid gap-16 py-20 sm:py-24 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-14">
-		<div aria-labelledby="papers">
-			<div class="flex flex-wrap items-end justify-between gap-4">
-				<SectionHeader id="papers" eyebrow="Research" title="Selected publications" />
-				<a href="/publications/" class="link inline-flex items-center gap-1.5 text-sm">
-					All publications <Icon name="arrow-right" class="size-3.5" />
-				</a>
+	<section class="border-t border-line" aria-label="Publications and news">
+		<div class="container-site grid gap-20 py-24 sm:py-32 lg:grid-cols-12 lg:gap-16">
+			<div class="lg:col-span-7">
+				<div class="flex flex-wrap items-baseline justify-between gap-4">
+					<h2 class="text-[2.25rem] leading-tight">Selected publications</h2>
+					<a href="/publications/" class="link">All publications</a>
+				</div>
+				<ol class="mt-8 divide-y divide-line">
+					{
+						selected.map((pub) => (
+							<li class="py-7 first:pt-2">
+								<PublicationItem pub={pub} citations={citationsFor(pub.id)} />
+							</li>
+						))
+					}
+				</ol>
 			</div>
-			<ol class="mt-6 divide-y divide-line border-y border-line">
-				{
-					selected.map((pub) => (
-						<li class="py-6">
-							<PublicationItem pub={pub} citations={citationsFor(pub.id)} />
-						</li>
-					))
-				}
-			</ol>
-		</div>
 
-		<div aria-labelledby="news">
-			<SectionHeader id="news" eyebrow="Updates" title="News" />
-			<ol class="mt-8 space-y-6 border-l border-line pl-6">
-				{
-					news.slice(0, 7).map((item) => (
-						<li class="relative">
-							<span
-								aria-hidden="true"
-								class="absolute -left-[29px] top-1 size-2.5 rounded-full border-2 border-bg bg-accent"
-							/>
-							<p class="text-xs font-medium text-subtle tabular-nums">
-								<time datetime={item.date}>{item.label ?? formatMonth(item.date)}</time>
-							</p>
-							<p class="mt-1 text-sm leading-relaxed text-body">
-								{item.href ? (
-									<a href={item.href} class="transition-colors hover:text-accent">
-										{item.text}
-									</a>
-								) : (
-									item.text
-								)}
-							</p>
-						</li>
-					))
-				}
-			</ol>
+			<div class="lg:col-span-5">
+				<h2 class="text-[2.25rem] leading-tight">News</h2>
+				<ol class="mt-8 space-y-6">
+					{
+						news.slice(0, 7).map((item) => (
+							<li class="grid grid-cols-[5.75rem_minmax(0,1fr)] gap-4">
+								<time datetime={item.date} class="meta pt-0.5 tabular-nums">
+									{item.label ?? formatMonth(item.date)}
+								</time>
+								<p class="leading-relaxed">
+									{item.href ? (
+										<a href={item.href} class="hover:text-accent">
+											{item.text}
+										</a>
+									) : (
+										item.text
+									)}
+								</p>
+							</li>
+						))
+					}
+				</ol>
+			</div>
 		</div>
 	</section>
 
-	<!-- Contact -->
-	<section id="contact" class="container-site scroll-mt-24" aria-labelledby="contact-title">
-		<div class="relative isolate overflow-hidden rounded-3xl border border-line bg-surface px-6 py-12 sm:px-12 sm:py-16">
-			<div aria-hidden="true" class="dot-grid absolute inset-0 -z-10"></div>
-			<div class="max-w-2xl">
-				<p class="eyebrow">Contact</p>
-				<h2 id="contact-title" class="mt-2 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Let’s talk</h2>
-				<p class="mt-4 leading-relaxed text-muted">
+	<!-- Contact: a solid field of ink -->
+	<section id="contact" class="scroll-mt-16 bg-field text-field-fg" aria-labelledby="contact-title">
+		<div class="container-site grid gap-10 py-24 sm:py-32 lg:grid-cols-12 lg:gap-16">
+			<h2 id="contact-title" class="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1] lg:col-span-5">Let’s talk.</h2>
+			<div class="lg:col-span-7">
+				<p class="max-w-[38rem] text-[1.1875rem] leading-relaxed">
 					I’m looking for Summer 2027 internships in machine learning engineering, applied and research science,
-					computer vision, and software engineering. I’m also always glad to talk about geospatial AI, evaluating
+					computer vision, and software engineering, and I’m always glad to talk about geospatial AI, evaluating
 					vision-language models, or risk modeling.
 				</p>
-				<p class="mt-3 text-sm font-medium text-fg">No visa sponsorship required.</p>
-				<div class="mt-8 flex flex-wrap gap-3">
+				<p class="mt-4 text-field-muted">No visa sponsorship required.</p>
+				<div class="mt-10 flex flex-wrap items-center gap-4">
 					<EmailLink variant="primary" label="Email me" />
 					{
 						linkedin && (
-							<a href={linkedin.href} class="btn btn-secondary">
-								<Icon name="linkedin" />
+							<a
+								href={linkedin.href}
+								class="btn border-field-fg text-field-fg hover:bg-field-fg hover:text-field"
+							>
 								LinkedIn
 							</a>
 						)
 					}
 				</div>
-				<p class="mt-6 text-sm text-muted">Or write to <EmailLink variant="text" />.</p>
+				<p class="mt-8 text-field-muted">Or write to <EmailLink variant="text" class="text-field-fg" />.</p>
 			</div>
 		</div>
 	</section>
 </BaseLayout>
+
+<style>
+	.hint-touch {
+		display: none;
+	}
+
+	@media (hover: none) {
+		.hint-fine {
+			display: none;
+		}
+		.hint-touch {
+			display: inline;
+		}
+	}
+
+	/* Portrait: rounded corners and a short, soft edge. The mask is a slightly blurred rounded rectangle with the
+	   photo's 4:5 shape; the border radius keeps the corners round if masks are unsupported. */
+	.portrait {
+		border-radius: 18px;
+		mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Cfilter id='f' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='3.5'/%3E%3C/filter%3E%3Crect x='9' y='9' width='382' height='482' rx='20' filter='url(%23f)'/%3E%3C/svg%3E");
+		mask-size: 100% 100%;
+		mask-repeat: no-repeat;
+	}
+</style>

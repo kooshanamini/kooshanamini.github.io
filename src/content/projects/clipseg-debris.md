@@ -1,6 +1,6 @@
 ---
 title: Vision-language segmentation that generalizes to unseen hurricanes
-name: CLIPSeg-debris · CACAIE 2025
+name: CLIPSeg-debris, CACAIE 2025
 summary: Fine-tuned only the decoder of a frozen CLIP-based segmentation model on a curated, multi-annotator aerial dataset, reaching Dice 0.86 on a hurricane never seen in training.
 order: 1
 featured: true
